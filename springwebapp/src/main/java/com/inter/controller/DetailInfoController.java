@@ -1,6 +1,5 @@
 package com.inter.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +23,7 @@ public class DetailInfoController {
 	@RequestMapping("/detailInfo")
 	public Map<String, Object> detailInfo(HttpServletRequest request) {
 		
-		Map<String, Object> result = new HashMap<String, Object>(); //.detailInfo(request);
-		
-		result.put("abc", "你好");
+		Map<String, Object> result = detailInfoService.detailInfo(request);
 		
 		return result;
 	}
