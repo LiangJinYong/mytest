@@ -1,7 +1,8 @@
 package com.inter.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,10 @@ public class WatermarkDetectController {
 	}
 	
 	@RequestMapping("/watermarkDetect")
-	public void watermarkDetect(HttpServletRequest request, HttpServletResponse response) {
-		watermarkDetectService.watermarkDetect(request, response);
+	public Map<String, Object> watermarkDetect(HttpServletRequest request) {
+		
+		Map<String, Object> result = watermarkDetectService.watermarkDetect(request);
+		
+		return result;
 	}
 }

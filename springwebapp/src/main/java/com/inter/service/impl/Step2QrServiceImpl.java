@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,40 +26,49 @@ public class Step2QrServiceImpl implements Step2QrService {
 		this.step2QrDao = step2QrDao;
 	}
 
-	public Map<String, Object> step2Qr(HttpServletRequest request, HttpServletResponse response) {
+	public void setLogService(LogService logService) {
+		this.logService = logService;
+	}
+
+	public Map<String, Object> step2Qr(HttpServletRequest request) {
 		String watermarkKey = request.getParameter("WATERMARK_KEY");
 		String latitude = request.getParameter("latitude");
 		String longitude = request.getParameter("longitude");
+		
+		String osType = request.getParameter("os_type");
+		String device = request.getParameter("device");
 
-		// token from header
 		String token = request.getHeader("token");
 		
-		int count = step2QrDao.queryAppUserCount(token);
+		Map<String, Object> result = new HashMap<String, Object>();
 		
-		if (count > 0) {
+		List<Map<String, Object>> bchList = step2QrDao.queryBch(watermarkKey);
+		
+		if (bchList.size() > 0) {
+			logService.consumerQrLog(token, watermarkKey, latitude, longitude, osType, device);
 			
-			List<Map<String, Object>> list = step2QrDao.queryBch(watermarkKey);
-			
-			if (list.size() > 0) {
-				// insert qr log
-				logService.consumerQrLog(token, watermarkKey, latitude, longitude);
-				
-				response.setStatus(200);
-				Map<String, Object> result = new HashMap<String, Object>();
-				result.put("BCH", list.get(0).get("BCH"));
-				return result;
+			if ("".equals(token)) {
+				result.put("result_code", 200);
 			} else {
-				// insert fail qr log
-				logService.consumerFailQrLog(token, watermarkKey, latitude, longitude, 1, 1);
 				
-				response.setStatus(404);
-				return null;
+				int appUserCount = step2QrDao.queryAppUserCount(token);
+				
+				if (appUserCount > 0) {
+					result.put("result_code", 200);
+				} else {
+					result.put("result_code", 403);
+				}
+				
 			}
 			
+			result.put("BCH", bchList.get(0).get("BCH"));
 		} else {
-			response.setStatus(403);
-			return null;
+			logService.consumerFailQrLog(token, watermarkKey, latitude, longitude, 1, 2, osType, device);
+			
+			result.put("result_code", 404);
 		}
+		
+		return result;
 	}
 	
 	

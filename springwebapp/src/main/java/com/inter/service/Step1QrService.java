@@ -7,6 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface Step1QrService {
 
-	Map<String, Object> step1Qr(HttpServletRequest request, HttpServletResponse response);
+	Map<String, Object> step1Qr(HttpServletRequest request);
 
 }

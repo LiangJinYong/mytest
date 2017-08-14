@@ -32,40 +32,37 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 		String osType = request.getParameter("os_type");
 		String osVersion = request.getParameter("os_version");
 		String device = request.getParameter("device");
-		
+
 		String token = createToken(mobilePhoneNumber, device);
-		
-		int count = publishTokenDao.queryCount(mobilePhoneNumber);
-		
+
+		int appUserCount = publishTokenDao.queryAppUserCountByPhoneNumber(mobilePhoneNumber);
+
 		Map<String, Object> result = new HashMap<String, Object>();
-		
-		if (count > 0) {
+
+		if (appUserCount > 0) {
 			try {
 				publishTokenDao.updateAppUser(mobilePhoneNumber, osType, osVersion, device, token);
-				
+
 				result.put("token", token);
 				result.put("result_code", 200);
-				return result;
 			} catch (DataAccessException e) {
-				Map<String, Object> errResult = new HashMap<String, Object>();
-				errResult.put("result_code", 500);
-				return errResult;
+				result.put("result_code", 500);
 			}
-		} else { 
+		} else {
 			try {
 				publishTokenDao.insertAppUser(mobilePhoneNumber, osType, osVersion, device, token);
-				
+
 				result.put("token", token);
 				result.put("result_code", 200);
-				return result;
-			}catch (DataAccessException e) {
-				Map<String, Object> errResult = new HashMap<String, Object>();
-				errResult.put("result_code", 500);
-				return errResult;
+			} catch (DataAccessException e) {
+				result.put("result_code", 500);
 			}
 		}
+
+		return result;
 	}
 
+	// 토큰 만들기
 	private String createToken(String mobilePhoneNumber, String device) {
 		long time = new Date().getTime();
 		String subject = mobilePhoneNumber + time + device;

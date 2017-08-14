@@ -1,9 +1,12 @@
 package com.inter.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.inter.dao.WatermarkDetectDao;
@@ -27,33 +30,53 @@ public class WatermarkDetectServiceImpl implements WatermarkDetectService {
 		this.logService = logService;
 	}
 
-	public void watermarkDetect(HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, Object> watermarkDetect(HttpServletRequest request) {
 		String sequence = request.getParameter("SEQUENCE");
 		double latitude = Double.parseDouble(request.getParameter("latitude"));
 		double longitude = Double.parseDouble(request.getParameter("longitude"));
 		int generation = Integer.parseInt(request.getParameter("GENERATION"));
 		int step = Integer.parseInt(request.getParameter("STEP"));
 		
+		String osType = request.getParameter("os_type");
+		String device = request.getParameter("device");
+		
 		String token = request.getHeader("token");
 		
-		int appUserCount = watermarkDetectDao.queryAppUserCount(token);
+		Map<String, Object> result = new HashMap<String, Object>();
 		
-		if (appUserCount > 0) {
+		try {
+			Map<String, Object> seqOrder = watermarkDetectDao.querySeqOrder(sequence, generation, step);
 			
-			int seqOrderCount = watermarkDetectDao.querySeqOrderCount(sequence, generation, step);
-					
-			if (seqOrderCount > 0) {
-				
-				logService.consumerWatermarkLog(token, sequence, latitude, longitude);
-				
-				response.setStatus(200);
+			logService.consumerWatermarkLog(token, sequence, latitude, longitude, osType, device);
+			
+			int isBizcard = (Integer) seqOrder.get("isBizcard");
+			
+			if ("".equals(token)) {
+				if (isBizcard != 0) {
+					result.put("result_code", 201);
+				} else {
+					result.put("result_code", 200);
+				}
 			} else {
-				logService.consumerFailWatermarkLog(token, sequence, latitude, longitude, generation, step);
-				response.setStatus(404);
+				int appUserCount = watermarkDetectDao.queryAppUserCount(token);
+				
+				if (appUserCount > 0) {
+					if (isBizcard != 0) {
+						result.put("result_code", 201);
+					} else {
+						result.put("result_code", 200);
+					}
+				} else {
+					result.put("result_code", 403);
+				}
 			}
-		} else {
-			response.setStatus(403);
+			
+		} catch(EmptyResultDataAccessException e) {
+			logService.consumerFailWatermarkLog(token, sequence, latitude, longitude, generation, step, osType, device);
+			result.put("result_code", 404);
 		}
+		
+		return result;
 	}
 
 }

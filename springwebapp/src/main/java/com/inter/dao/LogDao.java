@@ -26,4 +26,7 @@ public interface LogDao {
 	void insertFailConsumerWatermarkLog(int userNo, String sequence, double longitude, double latitude, int generation,
 			int step, String mobilePhoneNumber, String osType, String device, int currentVersionCode, String time);
 
+	void insertFailLog(int userNo, double longitude, double latitude, int generation, int step,
+			String mobilePhoneNumber, String osType, String device, int currentVersionCode, String time);
+
 }

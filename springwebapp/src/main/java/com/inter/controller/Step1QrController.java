@@ -22,9 +22,9 @@ public class Step1QrController {
 	}
 	
 	@RequestMapping("/step1Qr")
-	public Map<String, Object> step1Qr(HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, Object> step1Qr(HttpServletRequest request) {
 		
-		Map<String, Object> result = step1QrService.step1Qr(request, response);
+		Map<String, Object> result = step1QrService.step1Qr(request);
 		
 		return result;
 	}

@@ -72,4 +72,12 @@ public class LogDaoImpl implements LogDao {
 				mobilePhoneNumber, osType, device, currentVersionCode, time });
 	}
 
+	public void insertFailLog(int userNo, double longitude, double latitude, int generation, int step,
+			String mobilePhoneNumber, String osType, String device, int currentVersionCode, String time) {
+
+		String sql = "INSERT INTO app_log VALUES (null, ?, null, null, ?, ?, ?, ?, ?, ?, ?, ?, ?, false, false)";
+		
+		jdbcTemplate.update(sql, new Object[] {userNo, longitude, latitude, generation, step, mobilePhoneNumber, osType, device, currentVersionCode, time});
+	}
+
 }

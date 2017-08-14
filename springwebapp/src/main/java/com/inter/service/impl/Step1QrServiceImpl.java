@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,43 +30,45 @@ public class Step1QrServiceImpl implements Step1QrService {
 		this.logService = logService;
 	}
 
-	public Map<String, Object> step1Qr(HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, Object> step1Qr(HttpServletRequest request) {
 
 		String watermarkKey = request.getParameter("WATERMARK_KEY");
 		String latitude = request.getParameter("latitude");
 		String longitude = request.getParameter("longitude");
+		
+		String osType = request.getParameter("os_type");
+		String device = request.getParameter("device");
 
-		// token from header
 		String token = request.getHeader("token");
 		
-		int appUserCount = step1QrDao.queryAppUserCount(token);
+		Map<String, Object> result = new HashMap<String, Object>();
 		
-		if (appUserCount > 0) {
+		List<Map<String,Object>> reSeqList = step1QrDao.queryReSeq(watermarkKey);
+		
+		if (reSeqList.size() > 0) {
 			
-			List<Map<String, Object>> reSeqList = step1QrDao.queryReSeq(watermarkKey);
+			logService.consumerQrLog(token, watermarkKey, latitude, longitude, osType, device);
 			
-			if (reSeqList.size() > 0) {
-				// insert qr log
-				logService.consumerQrLog(token, watermarkKey, latitude, longitude);
-				
-				response.setStatus(200);
-				
-				Map<String, Object> result = new HashMap<String, Object>();
-				result.put("SEQUENCE", reSeqList.get(0).get("SEQUENCE"));
-				return result;
-				
+			if ("".equals(token)) {
+				result.put("result_code", 200);
 			} else {
-				// insert fail qr log
-				logService.consumerFailQrLog(token, watermarkKey, latitude, longitude, 1, 1);
-
-				response.setStatus(404);
-				return null;
+				
+				int appUserCount = step1QrDao.queryAppUserCount(token);
+				
+				if (appUserCount > 0) {
+					result.put("result_code", 200);
+				} else {
+					result.put("result_code", 403);
+				}
 			}
 			
+			result.put("SEQUENCE", reSeqList.get(0).get("SEQUENCE"));
 		} else {
-			response.setStatus(403);
-			return null;
+			logService.consumerFailQrLog(token, watermarkKey, latitude, longitude, 1, 1, osType, device);
+			result.put("result_code", 404);
 		}
+		
+		return result;
 	}
 
 }

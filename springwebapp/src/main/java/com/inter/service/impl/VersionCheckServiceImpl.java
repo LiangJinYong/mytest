@@ -23,32 +23,34 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 	}
 
 	public Map<String, Object> versionCheck(HttpServletRequest request) {
+		
+		String osType = request.getParameter("os_type");
+		int currentVersionCode = Integer.parseInt(request.getParameter("current_version_code"));
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
 		try {
-			Map<String, Object> query1Result = versionCheckDao.query1(request.getParameter("os_type"));
-			int currentVersionCodeDb = (Integer) query1Result.get("current_version_code");
-			int currentVersionCodeParam = Integer.parseInt(request.getParameter("current_version_code"));
+			result = versionCheckDao.queryAppVersionByOsType(osType);
 			
-			if (currentVersionCodeDb == currentVersionCodeParam) {
-				query1Result.put("is_forced_update", false);
-				query1Result.put("result_code", 200);
-				return query1Result;
+			int currentVersionCodeDb = (Integer) result.get("current_version_code");
+			if (currentVersionCode == currentVersionCodeDb) {
+				result.put("is_forced_update", false);
+				result.put("result_code", 200);
+				
 			} else {
-				int count = versionCheckDao.query2(currentVersionCodeParam, currentVersionCodeDb);
+				int count = versionCheckDao.queryAppVersionByCode(currentVersionCode, currentVersionCodeDb);
 				
 				if (count > 0) {
-					query1Result.put("is_forced_update", true);
-					query1Result.put("result_code", 200);
-					return query1Result;
+					result.put("is_forced_update", true);
+					result.put("result_code", 200);
 				} else {
-					query1Result.put("is_forced_update", false);
-					query1Result.put("result_code", 200);
-					return query1Result;
+					result.put("is_forced_update", false);
+					result.put("result_code", 200);
 				}
 			}
 		} catch (EmptyResultDataAccessException e) {
-			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("result_code", 500);
-			return result;
 		}
+		return result;
 	}
 }

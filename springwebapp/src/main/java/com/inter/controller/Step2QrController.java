@@ -3,7 +3,6 @@ package com.inter.controller;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +21,9 @@ public class Step2QrController {
 	}
 	
 	@RequestMapping("/step2Qr")
-	public Map<String, Object> step2Qr(HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, Object> step2Qr(HttpServletRequest request) {
 		
-		Map<String, Object> result = step2QrService.step2Qr(request, response);
+		Map<String, Object> result = step2QrService.step2Qr(request);
 		
 		return result;
 	}

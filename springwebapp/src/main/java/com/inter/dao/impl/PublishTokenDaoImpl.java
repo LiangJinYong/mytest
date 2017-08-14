@@ -16,7 +16,7 @@ public class PublishTokenDaoImpl implements PublishTokenDao {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public int queryCount(String mobilePhoneNumber) {
+	public int queryAppUserCountByPhoneNumber(String mobilePhoneNumber) {
 
 		String sql = "SELECT count(*) FROM app_user WHERE mobile_phone_number = ?";
 		return jdbcTemplate.queryForObject(sql, new Object[] { mobilePhoneNumber }, Integer.class);

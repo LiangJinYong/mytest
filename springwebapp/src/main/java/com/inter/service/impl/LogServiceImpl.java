@@ -3,6 +3,7 @@ package com.inter.service.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -23,43 +24,60 @@ public class LogServiceImpl implements LogService {
 		this.logDao = logDao;
 	}
 
-	public void consumerQrLog(String token, String watermarkKey, String latitude, String longitude) {
-		try {
-			Map<String, Object> appUser = logDao.queryAppUser(token);
+	public void consumerQrLog(String token, String watermarkKey, String latitude, String longitude, String osType,
+			String device) {
 
-			int userNo = (Integer) appUser.get("user_key");
-			String mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
-			String osType = (String) appUser.get("os_type");
-			String device = (String) appUser.get("device");
+		Map<String, Object> appUser = new HashMap<String, Object>();
+
+		if ("".equals(osType) || "".equals(device)) {
+			try {
+				appUser = logDao.queryAppUser(token);
+
+				osType = (String) appUser.get("os_type");
+				device = (String) appUser.get("device");
+			} catch (Exception e) {
+				osType = "Android";
+				device = "";
+			}
+		}
+
+		int userNo = -1;
+		String mobilePhoneNumber = "";
+
+		try {
+			appUser = logDao.queryAppUser(token);
+
+			userNo = (Integer) appUser.get("user_key");
+			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		} catch (Exception e) {
+			System.out.println("Get App User Failed!");
+		}
+
+		try {
+			Map<String, Object> seqAndOrder = logDao.querySeqAndOrderByWatermarkKey(watermarkKey);
+
+			String sequence = (String) seqAndOrder.get("SEQUENCE");
+			int generation = (Integer) seqAndOrder.get("GENERATION");
+			int step = (Integer) seqAndOrder.get("STEP");
 
 			try {
-				Map<String, Object> seqAndOrder = logDao.querySeqAndOrderByWatermarkKey(watermarkKey);
+				Map<String, Object> appVersion = logDao.queryAppVersion(osType);
 
-				String sequence = (String) seqAndOrder.get("SEQUENCE");
-				int generation = (Integer) seqAndOrder.get("GENERATION");
-				int step = (Integer) seqAndOrder.get("STEP");
+				int currentVersionCode = (Integer) appVersion.get("current_version_code");
+
+				String time = getTime();
 
 				try {
-					Map<String, Object> appVersion = logDao.queryAppVersion(osType);
-
-					int currentVersionCode = (Integer) appVersion.get("current_version_code");
-
-					String time = getTime();
-
-					try {
-						logDao.insertConsumerQrLog(userNo, watermarkKey, sequence, longitude, latitude, generation,
-								step, mobilePhoneNumber, osType, device, currentVersionCode, time);
-					} catch (Exception e) {
-						throw new RuntimeException("Insert App Log Failed");
-					}
-				} catch (EmptyResultDataAccessException e) {
-					throw new RuntimeException("Get App Version Failed!");
+					logDao.insertConsumerQrLog(userNo, watermarkKey, sequence, longitude, latitude, generation, step,
+							mobilePhoneNumber, osType, device, currentVersionCode, time);
+				} catch (Exception e) {
+					System.out.println("Insert Consumer Qr Log Failed!");
 				}
 			} catch (EmptyResultDataAccessException e) {
-				throw new RuntimeException("Get Seq And Order Failed!");
+				System.out.println("Get App Version Failed!");
 			}
 		} catch (EmptyResultDataAccessException e) {
-			throw new RuntimeException("Get App User Failed!");
+			System.out.println("Get Seq And Order Failed!");
 		}
 	}
 
@@ -73,104 +91,183 @@ public class LogServiceImpl implements LogService {
 	}
 
 	public void consumerFailQrLog(String token, String watermarkKey, String latitude, String longitude, int generation,
-			int step) {
-		try {
-			Map<String, Object> appUser = logDao.queryAppUser(token);
+			int step, String osType, String device) {
 
-			int userNo = (Integer) appUser.get("user_key");
-			String mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
-			String osType = (String) appUser.get("os_type");
-			String device = (String) appUser.get("device");
+		Map<String, Object> appUser = new HashMap<String, Object>();
 
+		if ("".equals(osType) || "".equals(device)) {
 			try {
-				Map<String, Object> appVersion = logDao.queryAppVersion(osType);
+				appUser = logDao.queryAppUser(token);
 
-				int currentVersionCode = (Integer) appVersion.get("current_version_code");
-
-				String time = getTime();
-
-				try {
-					logDao.insertConsumerFailQrLog(userNo, watermarkKey, longitude, latitude, generation, step,
-							mobilePhoneNumber, osType, device, currentVersionCode, time);
-				} catch (Exception e) {
-					throw new RuntimeException("Insert App Log Failed");
-				}
-			} catch (EmptyResultDataAccessException e) {
-				throw new RuntimeException("Get App Version Failed!");
+				osType = (String) appUser.get("os_type");
+				device = (String) appUser.get("device");
+			} catch (Exception e) {
+				osType = "Android";
+				device = "";
 			}
-
-		} catch (EmptyResultDataAccessException e) {
-			throw new RuntimeException("Get App User Failed!");
 		}
 
-	}
+		int userNo = -1;
+		String mobilePhoneNumber = "";
 
-	public void consumerWatermarkLog(String token, String sequence, double latitude, double longitude) {
+		if (appUser.size() > 0) {
+			userNo = (Integer) appUser.get("user_key");
+			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		}
+
 		try {
-			Map<String, Object> appUser = logDao.queryAppUser(token);
+			Map<String, Object> appVersion = logDao.queryAppVersion(osType);
 
-			int userNo = (Integer) appUser.get("user_key");
-			String mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
-			String osType = (String) appUser.get("os_type");
-			String device = (String) appUser.get("device");
+			int currentVersionCode = (Integer) appVersion.get("current_version_code");
+
+			String time = getTime();
 
 			try {
-				Map<String, Object> seqAndOrder = logDao.querySeqAndOrderBySequence(sequence);
+				logDao.insertConsumerFailQrLog(userNo, watermarkKey, longitude, latitude, generation, step,
+						mobilePhoneNumber, osType, device, currentVersionCode, time);
 
-				String watermarkKey = (String) seqAndOrder.get("WATERMARK_KEY");
-				int generation = (Integer) seqAndOrder.get("GENERATION");
-				int step = (Integer) seqAndOrder.get("STEP");
-
-				try {
-					Map<String, Object> appVersion = logDao.queryAppVersion(osType);
-
-					int currentVersionCode = (Integer) appVersion.get("current_version_code");
-
-					String time = getTime();
-
-					try {
-						logDao.insertConsumerWatermarkLog(userNo, watermarkKey, sequence, longitude, latitude,
-								generation, step, mobilePhoneNumber, osType, device, currentVersionCode, time);
-					} catch (Exception e) {
-						throw new RuntimeException("Insert Consumer Watermark Log Failed");
-					}
-				} catch (EmptyResultDataAccessException e) {
-					throw new RuntimeException("Get App Version Failed!");
-				}
-
-			} catch (EmptyResultDataAccessException e) {
-				throw new RuntimeException("Get Seq And Order Failed!");
+			} catch (Exception e) {
+				System.out.println("Insert Fail Log Failed!");
 			}
-
 		} catch (EmptyResultDataAccessException e) {
-			throw new RuntimeException("Get App User Failed!");
+			System.out.println("Get App Version Failed!");
+		}
+	}
+
+	public void consumerWatermarkLog(String token, String sequence, double latitude, double longitude, String osType,
+			String device) {
+		Map<String, Object> appUser = new HashMap<String, Object>();
+
+		if ("".equals(osType) || "".equals(device)) {
+			try {
+				appUser = logDao.queryAppUser(token);
+
+				osType = (String) appUser.get("os_type");
+				device = (String) appUser.get("device");
+			} catch (Exception e) {
+				osType = "Android";
+				device = "";
+			}
+		}
+
+		int userNo = -1;
+		String mobilePhoneNumber = "";
+
+		try {
+			appUser = logDao.queryAppUser(token);
+
+			userNo = (Integer) appUser.get("user_key");
+			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		} catch (Exception e) {
+			System.out.println("Get App User Failed!");
+		}
+
+		try {
+			Map<String, Object> seqAndOrder = logDao.querySeqAndOrderBySequence(sequence);
+
+			String watermarkKey = (String) seqAndOrder.get("WATERMARK_KEY");
+			int generation = (Integer) seqAndOrder.get("GENERATION");
+			int step = (Integer) seqAndOrder.get("STEP");
+			
+			try {
+				Map<String, Object> appVersion = logDao.queryAppVersion(osType);
+				
+				int currentVersionCode = (Integer) appVersion.get("current_version_code");
+				
+				String time = getTime();
+				
+				logDao.insertConsumerWatermarkLog(userNo, watermarkKey, sequence, longitude, latitude, generation, step, mobilePhoneNumber, osType, device, currentVersionCode, time);
+				
+			} catch (EmptyResultDataAccessException e) {
+				System.out.println("Get App Version Failed!");
+			}
+		} catch(EmptyResultDataAccessException e) {
+			System.out.println("Get Seq And Order Failed!");
 		}
 	}
 
 	public void consumerFailWatermarkLog(String token, String sequence, double latitude, double longitude,
-			int generation, int step) {
+			int generation, int step, String osType, String device) {
 
+		Map<String, Object> appUser = new HashMap<String, Object>();
+		
+		if ("".equals(osType) || "".equals(device)) {
+			try {
+				appUser = logDao.queryAppUser(token);
+
+				osType = (String) appUser.get("os_type");
+				device = (String) appUser.get("device");
+			} catch (Exception e) {
+				osType = "Android";
+				device = "";
+			}
+		}
+
+		int userNo = -1;
+		String mobilePhoneNumber = "";
+		
+		if (appUser.size() > 0) {
+			userNo = (Integer) appUser.get("user_key");
+			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		}
+		
 		try {
-			Map<String, Object> appUser = logDao.queryAppUser(token);
-			
-			int userNo = (Integer) appUser.get("user_key");
-			String mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
-			String osType = (String) appUser.get("os_type");
-			String device = (String) appUser.get("device");
-			
 			Map<String, Object> appVersion = logDao.queryAppVersion(osType);
 			
 			int currentVersionCode = (Integer) appVersion.get("current_version_code");
-			String time = getTime();
 			
+			String time = getTime();
+		
 			try {
 				logDao.insertFailConsumerWatermarkLog(userNo, sequence, longitude, latitude, generation, step, mobilePhoneNumber, osType, device, currentVersionCode, time);
-			} catch (Exception e) {
-				throw new RuntimeException("Insert Consumer Fail Watermark Log Failed");
+			} catch(Exception e) {
+				System.out.println("Insert Fail Consumer Watermark Log Failed!");
 			}
-			
+		} catch(EmptyResultDataAccessException e) {
+			System.out.println("Get App Version Failed!");
+		}
+	}
+
+	public void consumerFailLog(String token, double latitude, double longitude, int generation, int step,
+			String osType, String device) {
+
+		Map<String, Object> appUser = new HashMap<String, Object>();
+
+		if ("".equals(osType) || "".equals(device)) {
+			try {
+				appUser = logDao.queryAppUser(token);
+
+				osType = (String) appUser.get("os_type");
+				device = (String) appUser.get("device");
+			} catch (EmptyResultDataAccessException e) {
+				osType = "Android";
+				device = "";
+			}
+		}
+
+		int userNo = -1;
+		String mobilePhoneNumber = "";
+
+		if (appUser.size() > 0) {
+			userNo = (Integer) appUser.get("user_key");
+			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		}
+
+		try {
+			Map<String, Object> appVersion = logDao.queryAppVersion(osType);
+
+			int currentVersionCode = (Integer) appVersion.get("current_version_code");
+
+			String time = getTime();
+
+			try {
+				logDao.insertFailLog(userNo, longitude, latitude, generation, step, mobilePhoneNumber, osType, device,
+						currentVersionCode, time);
+			} catch (Exception e) {
+				System.out.println("Insert Fail Log Failed!");
+			}
 		} catch (EmptyResultDataAccessException e) {
-			throw new RuntimeException("Get App User Failed!");
+			System.out.println("Get App Version Failed!");
 		}
 	}
 

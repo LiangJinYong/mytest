@@ -1,5 +1,7 @@
 package com.inter.dao.impl;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,10 +23,9 @@ public class WatermarkDetectDaoImpl implements WatermarkDetectDao {
 		return jdbcTemplate.queryForObject(sql, new Object[] { token }, Integer.class);
 	}
 
-	public int querySeqOrderCount(String sequence, int generation, int step) {
-		
-		String sql = "SELECT count(*) FROM re_seq LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ WHERE SEQUENCE = ? AND GENERATION = ? AND STEP = ?";
-		return jdbcTemplate.queryForObject(sql, new Object[] { sequence, generation, step }, Integer.class);
+	public Map<String, Object> querySeqOrder(String sequence, int generation, int step) {
+		String sql = "SELECT * FROM re_seq LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ WHERE SEQUENCE = ? AND GENERATION = ? AND STEP = ?";
+		return jdbcTemplate.queryForMap(sql, new Object[] { sequence, generation, step });
 	}
 
 }

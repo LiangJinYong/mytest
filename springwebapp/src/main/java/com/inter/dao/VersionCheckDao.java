@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface VersionCheckDao {
 
-	Map<String, Object> query1(String osType);
+	Map<String, Object> queryAppVersionByOsType(String osType);
 
-	int query2(int currentVersionCodeParam, int currentVersionCodeDb);
+	int queryAppVersionByCode(int currentVersionCode, int currentVersionCodeDb);
 }
