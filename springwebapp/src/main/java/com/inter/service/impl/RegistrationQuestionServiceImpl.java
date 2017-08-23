@@ -1,6 +1,5 @@
 package com.inter.service.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,8 +27,6 @@ public class RegistrationQuestionServiceImpl implements RegistrationQuestionServ
 	}
 
 	public Map<String, Object> registrationQuestion(HttpServletRequest request)  {
-		
-		String characterEncoding = request.getCharacterEncoding();
 		
 		String content = request.getParameter("content");
 		String token = request.getHeader("token");

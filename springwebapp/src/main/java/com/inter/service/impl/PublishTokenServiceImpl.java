@@ -1,8 +1,11 @@
 package com.inter.service.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,12 +39,14 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 		String token = createToken(mobilePhoneNumber, device);
 
 		int appUserCount = publishTokenDao.queryAppUserCountByPhoneNumber(mobilePhoneNumber);
+		
+		String time = getTime();
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		if (appUserCount > 0) {
 			try {
-				publishTokenDao.updateAppUser(mobilePhoneNumber, osType, osVersion, device, token);
+				publishTokenDao.updateAppUser(mobilePhoneNumber, osType, osVersion, device, token, time);
 
 				result.put("token", token);
 				result.put("result_code", 200);
@@ -50,7 +55,7 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 			}
 		} else {
 			try {
-				publishTokenDao.insertAppUser(mobilePhoneNumber, osType, osVersion, device, token);
+				publishTokenDao.insertAppUser(mobilePhoneNumber, osType, osVersion, device, token, time);
 
 				result.put("token", token);
 				result.put("result_code", 200);
@@ -62,16 +67,24 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 		return result;
 	}
 
-	// 토큰 만들기
 	private String createToken(String mobilePhoneNumber, String device) {
 		long time = new Date().getTime();
 		String subject = mobilePhoneNumber + time + device;
 
-		String key = "redefinedInterface";
+		String key = "convertedInterface";
 
 		String token = Jwts.builder().setSubject(subject).signWith(SignatureAlgorithm.HS512, key).compact();
 
 		return token;
+	}
+	
+	private String getTime() {
+
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date curDate = new Date();
+
+		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+		return df.format(curDate);
 	}
 
 }

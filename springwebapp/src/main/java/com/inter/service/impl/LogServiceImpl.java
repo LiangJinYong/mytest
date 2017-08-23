@@ -110,9 +110,13 @@ public class LogServiceImpl implements LogService {
 		int userNo = -1;
 		String mobilePhoneNumber = "";
 
-		if (appUser.size() > 0) {
+		try {
+			appUser = logDao.queryAppUser(token);
+
 			userNo = (Integer) appUser.get("user_key");
 			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		} catch (Exception e) {
+			System.out.println("Get App User Failed!");
 		}
 
 		try {
@@ -205,10 +209,14 @@ public class LogServiceImpl implements LogService {
 
 		int userNo = -1;
 		String mobilePhoneNumber = "";
-		
-		if (appUser.size() > 0) {
+
+		try {
+			appUser = logDao.queryAppUser(token);
+
 			userNo = (Integer) appUser.get("user_key");
 			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		} catch (Exception e) {
+			System.out.println("Get App User Failed!");
 		}
 		
 		try {
@@ -248,9 +256,13 @@ public class LogServiceImpl implements LogService {
 		int userNo = -1;
 		String mobilePhoneNumber = "";
 
-		if (appUser.size() > 0) {
+		try {
+			appUser = logDao.queryAppUser(token);
+
 			userNo = (Integer) appUser.get("user_key");
 			mobilePhoneNumber = (String) appUser.get("mobile_phone_number");
+		} catch (Exception e) {
+			System.out.println("Get App User Failed!");
 		}
 
 		try {

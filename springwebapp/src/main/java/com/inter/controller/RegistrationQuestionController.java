@@ -1,6 +1,5 @@
 package com.inter.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,13 +18,12 @@ public class RegistrationQuestionController {
 	private RegistrationQuestionService registrationQuestionService;
 
 	public void setRegistrationQuestionService(RegistrationQuestionService registrationQuestionService) {
-		registrationQuestionService = registrationQuestionService;
+		this.registrationQuestionService = registrationQuestionService;
 	}
 	
 	@RequestMapping("/registrationQuestion")
-	public Map<String, Object> registrationQuestion(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+	public Map<String, Object> registrationQuestion(HttpServletRequest request, HttpServletResponse response) {
 		
-		String characterEncoding = request.getCharacterEncoding();
 		Map<String, Object> result = registrationQuestionService.registrationQuestion(request);
 		
 		return result;

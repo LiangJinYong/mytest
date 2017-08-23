@@ -6,3 +6,5 @@ encoding//src/main/java/com/inter/dao/impl/RegistrationQuestionDaoImpl.java=UTF-
 encoding//src/main/java/com/inter/service/RegistrationQuestionService.java=UTF-8
 encoding//src/main/java/com/inter/service/impl/DetailInfoServiceImpl.java=UTF-8
 encoding//src/main/java/com/inter/service/impl/RegistrationQuestionServiceImpl.java=UTF-8
+encoding//src/main/java/com/inter/service/impl/SendCertificationCodeServiceImpl.java=UTF-8
+encoding//src/main/java/com/inter/util/HttpUtil.java=UTF-8

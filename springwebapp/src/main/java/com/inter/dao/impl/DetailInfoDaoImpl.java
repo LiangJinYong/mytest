@@ -1,5 +1,6 @@
 package com.inter.dao.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,14 @@ public class DetailInfoDaoImpl implements DetailInfoDao {
 				+ "LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ "
 				+ "LEFT JOIN lian_user_info ON lian_order_info.USER_ID = lian_user_info.USER_ID "
 				+ "LEFT JOIN lian_biz_info ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID "
-				+ "WHERE re_seq.SEQUENCE = ? " + "AND lian_order_info.GENERATION = ? " + "AND lian_order_info.STEP = ?";
-		
+				+ "WHERE re_seq.SEQUENCE = ? AND lian_order_info.GENERATION = ? AND lian_order_info.STEP = ?";
+
 		return jdbcTemplate.queryForMap(sql, new Object[] { sequence, generation, step });
+	}
+
+	public List<Map<String, Object>> querySvcCdName(String svcCd) {
+		String sql = "SELECT * FROM licom_comm_cd_dtl WHERE COMM_CD_VAL = ?";
+		return jdbcTemplate.queryForList(sql, new Object[] { svcCd });
 	}
 
 }

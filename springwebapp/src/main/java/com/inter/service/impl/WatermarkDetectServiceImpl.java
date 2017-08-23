@@ -49,7 +49,7 @@ public class WatermarkDetectServiceImpl implements WatermarkDetectService {
 			
 			logService.consumerWatermarkLog(token, sequence, latitude, longitude, osType, device);
 			
-			int isBizcard = (Integer) seqOrder.get("isBizcard");
+			int isBizcard = (Integer) seqOrder.get("IS_BIZCARD");
 			
 			if ("".equals(token)) {
 				if (isBizcard != 0) {

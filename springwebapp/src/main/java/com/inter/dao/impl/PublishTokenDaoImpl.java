@@ -22,14 +22,16 @@ public class PublishTokenDaoImpl implements PublishTokenDao {
 		return jdbcTemplate.queryForObject(sql, new Object[] { mobilePhoneNumber }, Integer.class);
 	}
 
-	public void updateAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token) {
-		String sql = "UPDATE app_user SET os_type = ?, os_version = ?, device = ?, token = ? WHERE mobile_phone_number = ?";
-		jdbcTemplate.update(sql, new Object[] { osType, osVersion, device, token, mobilePhoneNumber });
+	public void updateAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token,
+			String time) {
+		String sql = "UPDATE app_user SET os_type = ?, os_version = ?, device = ?, token = ?, regdate = ? WHERE mobile_phone_number = ?";
+		jdbcTemplate.update(sql, new Object[] { osType, osVersion, device, token, time, mobilePhoneNumber });
 	}
 
-	public void insertAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token) {
-		String sql = "INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token) VALUES (null, ?, ?, ?, ?, ?)";
-		jdbcTemplate.update(sql, new Object[] { mobilePhoneNumber, osType, osVersion, device, token });
+	public void insertAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token,
+			String time) {
+		String sql = "INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, regdate) VALUES (null, ?, ?, ?, ?, ?, ?)";
+		jdbcTemplate.update(sql, new Object[] { mobilePhoneNumber, osType, osVersion, device, token, time });
 	}
 
 }

@@ -32,10 +32,15 @@ public class FailLogServiceImpl implements FailLogService {
 
 		String token = request.getHeader("token");
 		
-		logService.consumerFailLog(token, latitude, longitude, generation, step, osType, device);
-
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("result_code", 200);
+
+		try {
+			logService.consumerFailLog(token, latitude, longitude, generation, step, osType, device);
+			result.put("result_code", 200);
+		} catch(Exception e) {
+			result.put("result_code", 500);
+		}
+
 		return result;
 	}
 
