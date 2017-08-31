@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages= {"com.inter.controller", "com.inter.service", "com.inter.dao"})
+@ComponentScan(basePackages= {"com.inter.consumer.controller", "com.inter.consumer.service", "com.inter.consumer.dao", "com.inter.enterprise.controller", "com.inter.enterprise.service", "com.inter.enterprise.dao"})
 public class AppConfig {
 
 	@Bean
@@ -23,9 +23,21 @@ public class AppConfig {
 		dataSource.setUrl("jdbc:mysql://219.248.136.26:3306/lianshu");
 		dataSource.setUsername("yuyang");
 		dataSource.setPassword("1234");
+		dataSource.setInitialSize(80);
 		
 		return dataSource;
 	}
+	
+	/*
+	@Bean
+	public JndiObjectFactoryBean dataSource2() {
+		JndiObjectFactoryBean jndiObjectFB = new JndiObjectFactoryBean();
+		jndiObjectFB.setJndiName("jdbc/appInterface");
+		jndiObjectFB.setResourceRef(true);
+		jndiObjectFB.setProxyInterface(javax.sql.DataSource.class);
+		return jndiObjectFB;
+	}
+	*/
 	
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {

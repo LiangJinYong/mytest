@@ -7,7 +7,7 @@
 	<packaging>war</packaging>
 
 	<build>
-		<finalName>consumer</finalName>
+		<finalName>appInterface</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
