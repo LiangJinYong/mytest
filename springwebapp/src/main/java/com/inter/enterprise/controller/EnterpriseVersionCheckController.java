@@ -1,5 +1,6 @@
 package com.inter.enterprise.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,9 @@ public class EnterpriseVersionCheckController {
 	@RequestMapping("/versionCheck")
 	public Map<String, Object> versionCheck(HttpServletRequest request) {
 	
-		Map<String, Object> result = enterpriseVersionCheckService.versionCheck(request);
+		int count = enterpriseVersionCheckService.testDB(request);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("result", count);
 		return result;
 	}
 }

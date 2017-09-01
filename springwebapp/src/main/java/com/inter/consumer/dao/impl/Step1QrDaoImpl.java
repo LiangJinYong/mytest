@@ -19,11 +19,6 @@ public class Step1QrDaoImpl implements Step1QrDao {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public int queryAppUserCount(String token) {
-		String sql = "SELECT count(*) FROM app_user WHERE token = ?";
-		return jdbcTemplate.queryForObject(sql, new Object[] { token }, Integer.class);
-	}
-
 	public List<Map<String, Object>> queryReSeq(String watermarkKey) {
 		String sql = "SELECT re_seq.SEQUENCE FROM re_seq WHERE WATERMARK_KEY = ?";
 
