@@ -1,7 +1,5 @@
 package com.inter.enterprise.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +16,5 @@ public class EnterpriseVersionCheckServiceImpl implements EnterpriseVersionCheck
 		this.enterpriseVersionCheckDao = enterpriseVersionCheckDao;
 	}
 
-	public int testDB(HttpServletRequest request) {
-		String abc = request.getParameter("abc");
-		int count = enterpriseVersionCheckDao.getCount(abc);
-		return count;
-	}
 
 }

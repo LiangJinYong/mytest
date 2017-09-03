@@ -1,6 +1,5 @@
 package com.inter.consumer.dao.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +8,7 @@ import com.inter.consumer.dao.RegistrationQuestionDao;
 @Repository
 public class RegistrationQuestionDaoImpl implements RegistrationQuestionDao {
 
-	@Autowired
+//	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {

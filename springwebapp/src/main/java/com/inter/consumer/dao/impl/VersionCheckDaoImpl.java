@@ -2,7 +2,6 @@ package com.inter.consumer.dao.impl;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,7 @@ import com.inter.consumer.dao.VersionCheckDao;
 @Repository
 public class VersionCheckDaoImpl implements VersionCheckDao {
 
-	@Autowired
+//	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {

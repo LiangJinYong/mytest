@@ -6,8 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.inter.consumer.service.VersionCheckService;
 
 @RestController
@@ -18,11 +20,16 @@ public class VersionCheckController {
 	private VersionCheckService versionCheckService;
 
 	@RequestMapping("/versionCheck")
-	public Map<String, Object> versionCheck(HttpServletRequest request) {
+	@ResponseBody
+	public String versionCheck(HttpServletRequest request) {
 
-		Map<String, Object> result = versionCheckService.versionCheck(request);
+		String result = versionCheckService.versionCheck(request);
 
-		return result;
+		Map<String, String[]> paramMap = request.getParameterMap();
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(result);
+		return "asdf";
 	}
 
 }
