@@ -15,8 +15,10 @@
 	<context:annotation-config />
 	<context:component-scan base-package="com.inter.consumer" />
 
+<!-- 
 	<context:property-placeholder location="file:/var/lib/tomcat7/dbProp/db.properties" />
-
+ -->
+	<context:property-placeholder location="file:c:/demo/db.properties" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -37,6 +39,9 @@
 		<property name="jdbcUrl" value="${db.mysql.jdbcUrl}"></property>
 		<property name="user" value="${db.mysql.user}"></property>
 		<property name="password" value="${db.mysql.password}"></property>
+		<property name="initialPoolSize" value="${db.mysql.initialPoolSize}"></property>
+		<property name="minPoolSize" value="${db.mysql.minPoolSize}"></property>
+		<property name="maxPoolSize" value="${db.mysql.maxPoolSize}"></property>
 	</bean>
 	
 	<!-- mongodb configuration -->
