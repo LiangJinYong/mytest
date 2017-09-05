@@ -1,9 +1,9 @@
 package com.inter.consumer.service;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 public interface VersionCheckService {
 
-	String versionCheck(HttpServletRequest request);
+	String versionCheck(Map<String, String[]> paramMap);
 
 }

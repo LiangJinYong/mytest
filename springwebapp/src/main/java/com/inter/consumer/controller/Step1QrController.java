@@ -5,12 +5,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.inter.consumer.service.Step1QrService;
 
-@RestController
+@Controller
 @RequestMapping("/consumer")
 public class Step1QrController {
 
@@ -22,9 +22,10 @@ public class Step1QrController {
 	}
 	
 	@RequestMapping("/step1Qr")
-	public Map<String, Object> step1Qr(HttpServletRequest request) {
+	public String step1Qr(HttpServletRequest request) {
 		
-		Map<String, Object> result = step1QrService.step1Qr(request);
+		Map<String, String[]> paramMap = request.getParameterMap();
+		String result = step1QrService.step1Qr(paramMap);
 		
 		return result;
 	}

@@ -12,31 +12,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.inter.consumer.service.DetailInfoService;
+import com.inter.consumer.service.ProductCheckService;
 
 @Controller
 @RequestMapping("/consumer")
-public class DetailInfoController {
+public class ProductCheckController {
 
 	@Autowired
-	private DetailInfoService detailInfoService;
+	private ProductCheckService productCheckService;
 
-	public void setDetailInfoService(DetailInfoService detailInfoService) {
-		this.detailInfoService = detailInfoService;
+	public void setProductCheckService(ProductCheckService productCheckService) {
+		this.productCheckService = productCheckService;
 	}
 	
-	@RequestMapping("/detailInfo")
+	@RequestMapping("/productCheck")
 	@ResponseBody
-	public String detailInfo(HttpServletRequest request) {
-		
+	public String productCheck(HttpServletRequest request) {
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		Map<String, String> paramMap = new HashMap<String, String>();
 		Set<Entry<String,String[]>> entrySet = parameterMap.entrySet();
 		for(Entry<String, String[]> entry : entrySet) {
 			paramMap.put(entry.getKey(), entry.getValue()[0]);
 		}
-		
-		String result = detailInfoService.detailInfo(paramMap);
+
+		String result = productCheckService.productCheck(paramMap);
 		return result;
 	}
 }

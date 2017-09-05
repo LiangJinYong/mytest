@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
 import com.inter.consumer.service.VersionCheckService;
 
 @RestController
@@ -22,14 +21,12 @@ public class VersionCheckController {
 	@RequestMapping("/versionCheck")
 	@ResponseBody
 	public String versionCheck(HttpServletRequest request) {
-
-		String result = versionCheckService.versionCheck(request);
-
-		Map<String, String[]> paramMap = request.getParameterMap();
 		
-		Gson gson = new Gson();
-		String json = gson.toJson(result);
-		return "asdf";
+		Map<String, String[]> paramMap = request.getParameterMap();
+
+		String result = versionCheckService.versionCheck(paramMap);
+
+		return "MySQL Success -> count: " + result;
 	}
 
 }
