@@ -5,7 +5,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.inter.consumer">
 
-	<select id="getVersionCheckCount" parameterType="string" resultType="int">
-		SELECT count(*) FROM app_version
+	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
+		/* getVersionCheckCount */
+		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
 	</select>
+	
+	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
+		/* getVersionCheckCountByVersionCode */
+		SELECT count(*) FROM app_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
+	</select>
+	
 </mapper>

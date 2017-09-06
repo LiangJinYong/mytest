@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface VersionCheckService {
 
-	String versionCheck(Map<String, String> paramMap);
+	String versionCheck(Map<String, String> param);
 
 }

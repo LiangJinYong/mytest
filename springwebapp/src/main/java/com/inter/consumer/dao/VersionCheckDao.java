@@ -1,6 +1,11 @@
 package com.inter.consumer.dao;
 
+import java.util.Map;
+
 public interface VersionCheckDao {
 
-	int getVersionCheckCount(String osType);
+	Map<String, Object> getVersionCheckByOSType(String osType);
+
+	int getVersionCheckCountByVersionCode(int currentVersionCodeParam, int currentVersionCodeDB);
+
 }

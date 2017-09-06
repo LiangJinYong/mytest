@@ -29,7 +29,7 @@ public class VersionCheckController {
 
 		String result = versionCheckService.versionCheck(param);
 
-		return "MySQL Success -> count: " + result;
+		return result;
 	}
 
 }
