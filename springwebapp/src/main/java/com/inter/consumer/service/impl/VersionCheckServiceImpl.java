@@ -21,8 +21,8 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 		this.versionCheckDao = versionCheckDao;
 	}
 
-	public String versionCheck(Map<String, String[]> paramMap) {
-		String osType = paramMap.get("os_type")[0];
+	public String versionCheck(Map<String, String> paramMap) {
+		String osType = paramMap.get("os_type");
 		int count = versionCheckDao.getVersionCheckCount(osType);
 		return String.valueOf(count);
 	}

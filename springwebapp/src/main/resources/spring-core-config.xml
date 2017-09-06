@@ -53,6 +53,7 @@
 			max-wait-time="${db.mongodb.maxWaitTime}" 
 			socket-keep-alive="${db.mongodb.socketKeepAlive}"
 			socket-timeout="${db.mongodb.socketTimeout}"
+			
 			 />
 	</mongo:mongo-client>
 
