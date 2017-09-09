@@ -1,20 +1,15 @@
 package com.inter.consumer.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.RegistrationQuestionDao;
 import com.inter.consumer.service.RegistrationQuestionService;
+import com.inter.util.GetTimeUtil;
 
 @Service
 public class RegistrationQuestionServiceImpl implements RegistrationQuestionService {
@@ -26,44 +21,32 @@ public class RegistrationQuestionServiceImpl implements RegistrationQuestionServ
 		this.registrationQuestionDao = registrationQuestionDao;
 	}
 
-	public Map<String, Object> registrationQuestion(HttpServletRequest request)  {
-		
-		String content = request.getParameter("content");
-		String token = request.getHeader("token");
-		
-		int appUserCount = registrationQuestionDao.queryAppUserCount(token);
+	public String registrationQuestion(Map<String, String> param) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
+
+		String token = param.get("token");
 		
-		if (appUserCount > 0) {
+		Integer appUserNo =  registrationQuestionDao.queryAppUserNoByToken(token);
+		
+		if (appUserNo != null) {
+			String time = GetTimeUtil.getTime();
+			
+			param.put("time", time);
+			param.put("userKey", String.valueOf(appUserNo));
+			
 			try {
-				int userKey = registrationQuestionDao.queryUserKey(token);
-				
-				String time = getTime();
-				
-				try {
-					registrationQuestionDao.insertAppQuestion(content, time, userKey);
-					
-					result.put("result_code", 200);
-				} catch (Exception e) {
-					result.put("result_code", 500);
-				}
-			} catch (EmptyResultDataAccessException e) {
-				result.put("result_code", 404);
+				registrationQuestionDao.insertAppQuestion(param);
+				result.put("result_code", 200);
+			} catch (Exception e) {
+				result.put("result_code", 500);
 			}
 		} else {
 			result.put("result_code", 403);
 		}
-		return result;
-	}
-	
-	private String getTime() {
-
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date curDate = new Date();
-
-		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return df.format(curDate);
+		
+		Gson gson = new Gson();
+		return gson.toJson(result);
 	}
 
 }

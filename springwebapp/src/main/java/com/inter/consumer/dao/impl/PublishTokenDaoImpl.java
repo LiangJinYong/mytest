@@ -1,5 +1,9 @@
 package com.inter.consumer.dao.impl;
 
+import java.util.Map;
+
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.inter.consumer.dao.PublishTokenDao;
@@ -7,30 +11,28 @@ import com.inter.consumer.dao.PublishTokenDao;
 @Repository
 public class PublishTokenDaoImpl implements PublishTokenDao {
 
-//	@Autowired
-//	private JdbcTemplate jdbcTemplate;
-//
-//	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-//		this.jdbcTemplate = jdbcTemplate;
-//	}
+	private static final String NAMESPACE = "com.inter.consumer.";
+
+	@Autowired
+	private SqlSessionTemplate sqlSessionTemplate;
+
+	public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+		this.sqlSessionTemplate = sqlSessionTemplate;
+	}
 
 	public int queryAppUserCountByPhoneNumber(String mobilePhoneNumber) {
 
-//		String sql = "SELECT count(*) FROM app_user WHERE mobile_phone_number = ?";
-//		return jdbcTemplate.queryForObject(sql, new Object[] { mobilePhoneNumber }, Integer.class);
-		return 0;
+		return sqlSessionTemplate.selectOne(NAMESPACE + "queryAppUserCountByPhoneNumber", mobilePhoneNumber);
 	}
 
-	public void updateAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token,
-			String time) {
-//		String sql = "UPDATE app_user SET os_type = ?, os_version = ?, device = ?, token = ?, regdate = ? WHERE mobile_phone_number = ?";
-//		jdbcTemplate.update(sql, new Object[] { osType, osVersion, device, token, time, mobilePhoneNumber });
+	public void updateAppUser(Map<String, String> param) {
+
+		sqlSessionTemplate.update(NAMESPACE + "updateAppUser", param);
 	}
 
-	public void insertAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token,
-			String time) {
-//		String sql = "INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, regdate) VALUES (null, ?, ?, ?, ?, ?, ?)";
-//		jdbcTemplate.update(sql, new Object[] { mobilePhoneNumber, osType, osVersion, device, token, time });
+	public void insertAppUser(Map<String, String> param) {
+
+		sqlSessionTemplate.insert(NAMESPACE + "insertAppUser", param);
 	}
 
 }

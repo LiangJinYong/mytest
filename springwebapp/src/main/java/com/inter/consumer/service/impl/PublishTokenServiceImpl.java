@@ -1,20 +1,16 @@
 package com.inter.consumer.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.PublishTokenDao;
 import com.inter.consumer.service.PublishTokenService;
+import com.inter.util.GetTimeUtil;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,42 +25,44 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 		this.publishTokenDao = publishTokenDao;
 	}
 
-	public Map<String, Object> publishToken(HttpServletRequest request) {
+	public String publishToken(Map<String, String> param) {
 
-		String mobilePhoneNumber = request.getParameter("mobile_phone_number");
-		String osType = request.getParameter("os_type");
-		String osVersion = request.getParameter("os_version");
-		String device = request.getParameter("device");
+		String mobilePhoneNumber = param.get("mobile_phone_number");
+		String device = param.get("device");
 
 		String token = createToken(mobilePhoneNumber, device);
 
 		int appUserCount = publishTokenDao.queryAppUserCountByPhoneNumber(mobilePhoneNumber);
 		
-		String time = getTime();
+		String time = GetTimeUtil.getTime();
+		param.put("token", token);
+		param.put("time", time);
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		if (appUserCount > 0) {
 			try {
-				publishTokenDao.updateAppUser(mobilePhoneNumber, osType, osVersion, device, token, time);
-
+				publishTokenDao.updateAppUser(param);
+				
 				result.put("token", token);
 				result.put("result_code", 200);
-			} catch (DataAccessException e) {
+			} catch(Exception e) {
 				result.put("result_code", 500);
 			}
 		} else {
 			try {
-				publishTokenDao.insertAppUser(mobilePhoneNumber, osType, osVersion, device, token, time);
-
+				publishTokenDao.insertAppUser(param);
+				
 				result.put("token", token);
 				result.put("result_code", 200);
-			} catch (DataAccessException e) {
+			} catch(Exception e) {
 				result.put("result_code", 500);
 			}
 		}
+		
+		Gson gson = new Gson();
 
-		return result;
+		return gson.toJson(result);
 	}
 
 	private String createToken(String mobilePhoneNumber, String device) {
@@ -77,14 +75,4 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 
 		return token;
 	}
-	
-	private String getTime() {
-
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date curDate = new Date();
-
-		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return df.format(curDate);
-	}
-
 }

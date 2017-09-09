@@ -5,6 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.inter.consumer">
 
+	<!-- Version Check -->
 	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
 		/* getVersionCheckCount */
 		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
@@ -14,5 +15,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* getVersionCheckCountByVersionCode */
 		SELECT count(*) FROM app_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
 	</select>
+	
+	<!-- Publish Token -->
+	<select id="queryAppUserCountByPhoneNumber" parameterType="string" resultType="int">
+		/* queryAppUserCountByPhoneNumber */
+		SELECT count(*) FROM app_user WHERE mobile_phone_number = #{mobilePhoneNumber}
+	</select>
+	
+	<update id="updateAppUser" parameterType="map">
+		/* updateAppUser */
+		UPDATE app_user SET os_type = #{os_type}, os_version = #{os_version}, device = #{device}, token = #{token}, regdate = #{time} WHERE mobile_phone_number = #{mobile_phone_number}
+	</update>
+	
+	<insert id="insertAppUser" parameterType="map">
+		/* insertAppUser */
+		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, regdate) VALUES (null, #{mobile_phone_number}, #{os_type}, #{os_version}, #{device}, #{token}, #{time})
+	</insert>
+	
+	<!-- Register Question -->
+	<select id="queryAppUserNoByToken" parameterType="string" resultType="int">
+		/* queryAppUserNoByToken */
+		SELECT app_user.user_key FROM app_user WHERE token = #{token}
+	</select>
+	
+	<insert id="insertAppQuestion" parameterType="map">
+		/* insertAppQuestion */
+		INSERT INTO app_question (question_key, content, registration_time, user_key) VALUES (null, #{content}, #{time}, #{userKey})
+	</insert>
 	
 </mapper>

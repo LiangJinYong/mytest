@@ -1,11 +1,13 @@
 package com.inter.consumer.dao;
 
+import java.util.Map;
+
 public interface PublishTokenDao {
 
+	void updateAppUser(Map<String, String> param);
+
+	void insertAppUser(Map<String, String> param);
+
 	int queryAppUserCountByPhoneNumber(String mobilePhoneNumber);
-
-	void updateAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token, String time);
-
-	void insertAppUser(String mobilePhoneNumber, String osType, String osVersion, String device, String token, String time);
 
 }

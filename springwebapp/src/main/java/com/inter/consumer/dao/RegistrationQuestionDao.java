@@ -1,11 +1,11 @@
 package com.inter.consumer.dao;
 
+import java.util.Map;
+
 public interface RegistrationQuestionDao {
 
-	int queryAppUserCount(String token);
+	Integer queryAppUserNoByToken(String token);
 
-	int queryUserKey(String token);
-
-	void insertAppQuestion(String content, String time, int userKey);
+	void insertAppQuestion(Map<String, String> param);
 
 }

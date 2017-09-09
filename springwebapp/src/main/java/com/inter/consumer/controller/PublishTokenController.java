@@ -5,12 +5,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.inter.consumer.service.PublishTokenService;
+import com.inter.util.RequestParamUtil;
 
-@RestController
+@Controller
 @RequestMapping("/consumer")
 public class PublishTokenController {
 
@@ -20,12 +22,17 @@ public class PublishTokenController {
 	public void setPublishTokenService(PublishTokenService publishTokenService) {
 		this.publishTokenService = publishTokenService;
 	}
-	
+
 	@RequestMapping("/publishToken")
-	public Map<String, Object> publishToken(HttpServletRequest request) {
-		
-		Map<String, Object> result = publishTokenService.publishToken(request);
-		
+	@ResponseBody
+	public String publishToken(HttpServletRequest request) {
+
+		Map<String, String[]> paramMap = request.getParameterMap();
+
+		Map<String, String> param = RequestParamUtil.getParamMap(paramMap);
+
+		String result = publishTokenService.publishToken(param);
+
 		return result;
 	}
 }

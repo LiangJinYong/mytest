@@ -15,10 +15,10 @@
 	<context:annotation-config />
 	<context:component-scan base-package="com.inter.consumer" />
 
-<!-- 
-	<context:property-placeholder location="file:/var/lib/tomcat7/dbProp/db.properties" />
- -->
 	<context:property-placeholder location="file:c:/demo/db.properties" />
+<!-- 
+	<context:property-placeholder location="file:/var/lib/tomcat8/dbProp/db.properties" />
+ -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -45,7 +45,7 @@
 	</bean>
 	
 	<!-- mongodb configuration -->
-	<mongo:mongo-client id="mongo" host="${db.mongodb.host}" port="${db.mongodb.port}" credentials="${db.mongodb.credentials}">
+	<mongo:mongo-client id="mongo" credentials="${db.mongodb.credentials}" replica-set="${db.mongodb.replicaSet}">
 		<mongo:client-options
 			connections-per-host="${db.mongodb.connectionsPerHost}" 
 			threads-allowed-to-block-for-connection-multiplier="${db.mongodb.threadsAllowedToBlockForConnectionMultiplier}" 
@@ -53,7 +53,6 @@
 			max-wait-time="${db.mongodb.maxWaitTime}" 
 			socket-keep-alive="${db.mongodb.socketKeepAlive}"
 			socket-timeout="${db.mongodb.socketTimeout}"
-			
 			 />
 	</mongo:mongo-client>
 

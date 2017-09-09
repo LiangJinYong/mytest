@@ -27,7 +27,7 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 		Map<String, Object> versionCheckInfo = versionCheckDao.getVersionCheckByOSType(osType);
 
 		Map<String, Object> result = new HashMap<String, Object>();
-		
+
 		if (versionCheckInfo != null) {
 			
 			int currentVersionCodeDB = (Integer) versionCheckInfo.get("current_version_code");
