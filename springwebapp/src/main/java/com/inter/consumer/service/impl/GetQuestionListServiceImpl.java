@@ -1,18 +1,14 @@
 package com.inter.consumer.service.impl;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.GetQuestionListDao;
 import com.inter.consumer.service.GetQuestionListService;
 
@@ -26,9 +22,8 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 		this.getQuestionListDao = getQuestionListDao;
 	}
 
-	public Map<String, Object> getQuestionList(HttpServletRequest request) {
-
-		String token = request.getHeader("token");
+	public String getQuestionList(Map<String, String> param) {
+		String token = param.get("token");
 
 		int appUserCount = getQuestionListDao.queryAppUserCount(token);
 
@@ -56,7 +51,7 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 
 					dataMap.put("question_key", questionAnswer.get("question_key"));
 					dataMap.put("content", questionAnswer.get("content"));
-					dataMap.put("registration_time", date2Str((Timestamp) questionAnswer.get("registration_time")));
+					dataMap.put("registration_time", questionAnswer.get("registration_time"));
 					dataMap.put("user_key", questionAnswer.get("user_key"));
 
 					dataMap.put("answer", answerList);
@@ -67,7 +62,7 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 					answerMap = new HashMap<String, Object>();
 					answerMap.put("answer_key", questionAnswer.get("answer_key"));
 					answerMap.put("content", questionAnswer.get("a_content"));
-					answerMap.put("registration_time", date2Str((Timestamp)questionAnswer.get("a_registration_time")));
+					answerMap.put("registration_time", questionAnswer.get("a_registration_time"));
 
 					answerList.add(answerMap);
 				}
@@ -84,15 +79,8 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 			result.put("result_code", 403);
 		}
 
-		return result;
-	}
-
-	private String date2Str(Timestamp timestamp) {
-
-		java.util.Date d = timestamp;
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-		return df.format(d);
+		Gson gson = new Gson();
+		return gson.toJson(result);
 	}
 
 }

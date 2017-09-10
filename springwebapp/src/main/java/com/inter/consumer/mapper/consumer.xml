@@ -43,4 +43,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO app_question (question_key, content, registration_time, user_key) VALUES (null, #{content}, #{time}, #{userKey})
 	</insert>
 	
+	<!-- Get Question List -->
+	<select id="queryAppUserCount" parameterType="string" resultType="int">
+		/* queryAppUserCount */
+		SELECT count(*) FROM app_user WHERE token = #{token}
+	</select>
+	
+	<select id="queryQuestionAnswerList" parameterType="string" resultType="hashmap">
+		/* queryQuestionAnswerList */
+		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, q.user_key AS user_key, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
+		FROM app_question q LEFT JOIN app_answer a ON q.question_key = a.question_key
+		WHERE user_key = (SELECT user_key FROM app_user WHERE token = #{token})
+		ORDER BY question_key ASC, registration_time DESC
+	</select>
 </mapper>
