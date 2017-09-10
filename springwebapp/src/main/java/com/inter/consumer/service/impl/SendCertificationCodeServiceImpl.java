@@ -1,20 +1,16 @@
 package com.inter.consumer.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.SendCertificationCodeDao;
 import com.inter.consumer.service.SendCertificationCodeService;
+import com.inter.util.GetTimeUtil;
 import com.inter.util.HttpUtil;
 
 import net.sf.json.JSONObject;
@@ -29,18 +25,21 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 		this.sendCertificationCodeDao = sendCertificationCodeDao;
 	}
 
-	public Map<String, Object> sendCertificationCode(HttpServletRequest request) {
-		String mobilePhoneNumber = request.getParameter("mobile_phone_number");
+	public String sendCertificationCode(Map<String, String> param) {
+		String mobilePhoneNumber = param.get("mobile_phone_number");
 
 		String certificationCode = makeCertificationCode();
 
-		String time = getTime();
+		String time = GetTimeUtil.getTime();
 
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		try {
-			sendCertificationCodeDao.insertCertificationCode(mobilePhoneNumber, certificationCode, time);
+			param.put("certificationCode", certificationCode);
+			param.put("time", time);
 			
+			sendCertificationCodeDao.insertCertificationCode(param);
+
 			String appKey = "38eac23f5c3697c1";
 			String content = "验证码 : " + certificationCode + "【联数科技】";
 			String URL = "http://api.jisuapi.com/sms/send";
@@ -60,7 +59,10 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 		} catch (Exception e) {
 			result.put("result_code", 500);
 		}
-		return result;
+
+		Gson gson = new Gson();
+
+		return gson.toJson(result);
 	}
 
 	private static String sendPost(String URL, Map<String, String> datas) {
@@ -82,7 +84,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "";
+		return "-1";
 
 	}
 
@@ -96,14 +98,5 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 		}
 
 		return sb.toString();
-	}
-
-	private String getTime() {
-
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date curDate = new Date();
-
-		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-		return df.format(curDate);
 	}
 }

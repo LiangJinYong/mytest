@@ -56,4 +56,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE user_key = (SELECT user_key FROM app_user WHERE token = #{token})
 		ORDER BY question_key ASC, registration_time DESC
 	</select>
+	
+	<!-- Send Certification Code -->
+	<insert id="insertCertificationCode" parameterType="map">
+		/* insertCertificationCode */
+		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobile_phone_number}, #{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobile_phone_number}
+	</insert>
 </mapper>

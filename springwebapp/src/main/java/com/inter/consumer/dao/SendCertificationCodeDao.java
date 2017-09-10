@@ -1,7 +1,9 @@
 package com.inter.consumer.dao;
 
+import java.util.Map;
+
 public interface SendCertificationCodeDao {
 
-	void insertCertificationCode(String mobilePhoneNumber, String certificationCode, String time);
+	void insertCertificationCode(Map<String, String> param);
 
 }
