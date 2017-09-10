@@ -62,4 +62,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* insertCertificationCode */
 		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobile_phone_number}, #{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobile_phone_number}
 	</insert>
+	
+	<!-- Confirm Certification Code -->
+	<select id="queryCertificationCode" parameterType="string" resultType="string">
+		/* queryCertificationCode */
+		SELECT certification_code.certification_code FROM certification_code WHERE method = #{mobilePhoneNumber}
+	</select>
 </mapper>

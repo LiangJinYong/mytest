@@ -3,12 +3,10 @@ package com.inter.consumer.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.ConfirmCertificationCodeDao;
 import com.inter.consumer.service.ConfirmCertificationCodeService;
 
@@ -22,26 +20,28 @@ public class ConfirmCertificationCodeServiceImpl implements ConfirmCertification
 		this.confirmCertificationCodeDao = confirmCertificationCodeDao;
 	}
 
-	public Map<String, Object> confirmCertificationCode(HttpServletRequest request) {
-		
-		String mobilePhoneNumber = request.getParameter("mobile_phone_number");
-		String certificationCode = request.getParameter("certification_code");
-		
+	public String confirmCertificationCode(Map<String, String> param) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		
-		try {
-			String certificationCodeDB = confirmCertificationCodeDao.queryCertificationCode(mobilePhoneNumber);
+		String mobilePhoneNumber = param.get("mobile_phone_number");
+		
+		String certificationCodeDB = confirmCertificationCodeDao.queryCertificationCode(mobilePhoneNumber);
+		
+		if (certificationCodeDB != null) {
+			String certificationCode = param.get("certification_code").trim();
 			
-			if (certificationCode.equals(certificationCodeDB)) {
+			if (certificationCodeDB.equals(certificationCode)) {
 				result.put("result_code", 200);
 			} else {
 				result.put("result_code", 400);
 			}
-		} catch (DataAccessException e) {
+			
+		} else {
 			result.put("result_code", 404);
 		}
 		
-		return result;
+		Gson gson = new Gson();
+		return gson.toJson(result);
 	}
 	
 	

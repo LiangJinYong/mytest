@@ -6,6 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface ConfirmCertificationCodeService {
 
-	Map<String, Object> confirmCertificationCode(HttpServletRequest request);
+	String confirmCertificationCode(Map<String, String> param);
 
 }
