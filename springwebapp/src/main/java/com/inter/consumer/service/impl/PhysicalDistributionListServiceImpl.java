@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.inter.consumer.dao.PhysicalDistributionListDao;
 import com.inter.consumer.service.PhysicalDistributionListService;
 
@@ -22,27 +21,26 @@ public class PhysicalDistributionListServiceImpl implements PhysicalDistribution
 		this.physicalDistributionListDao = physicalDistributionListDao;
 	}
 
-	public Map<String, Object> physicalDistributionList(HttpServletRequest request) {
+	public String physicalDistributionList(Map<String, String> param) {
 
-		String sequence = request.getParameter("SEQUENCE");
-		String token = request.getHeader("token");
-		
+		String token = param.get("token");
+
 		Map<String, Object> result = new HashMap<String, Object>();
-		
-		int appUserCount = physicalDistributionListDao.queryAppUserCount(token);
-		
-		if (appUserCount > 0) {
 
+		int appUserCount = physicalDistributionListDao.queryAppUserCount(token);
+
+		if (appUserCount > 0) {
+			String sequence = param.get("SEQUENCE");
 			List<Map<String, Object>> physicalDistributionInfo = physicalDistributionListDao.queryPhysicalDistributionInfo(sequence);
-			
+
 			result.put("result_code", 200);
 			result.put("data", physicalDistributionInfo);
 		} else {
 			result.put("result_code", 403);
 		}
-		
-		return result;
+
+		Gson gson = new Gson();
+		return gson.toJson(result);
 	}
-	
-	
+
 }
