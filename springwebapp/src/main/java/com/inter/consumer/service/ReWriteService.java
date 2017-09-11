@@ -1,9 +1,9 @@
 package com.inter.consumer.service;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 public interface ReWriteService {
 
-	String reWrite(HttpServletRequest request);
+	String reWrite(Map<String, String> param);
 
 }
