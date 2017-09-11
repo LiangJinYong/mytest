@@ -4,7 +4,6 @@ import java.util.Map;
 
 public interface Step1QrService {
 
-	String step1Qr(Map<String, String[]> paramMap);
-
+	String step1Qr(Map<String, String> param);
 
 }

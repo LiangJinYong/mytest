@@ -21,12 +21,12 @@ public class Step1QrDaoImpl implements Step1QrDao {
 	}
 
 	public int getCountByWatermarkKey(String watermarkKey) {
-		DBCollection reqCollection = mongoTemplate.getCollection("req");
+		DBCollection productCollection = mongoTemplate.getCollection("product");
 		
 		DBObject obj = new BasicDBObject();
 		obj.put("PRODUCT_KEY", watermarkKey);
 		
-		DBCursor cursor = reqCollection.find(obj);
+		DBCursor cursor = productCollection.find(obj);
 		
 		return cursor.size();
 	}
