@@ -68,4 +68,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* queryCertificationCode */
 		SELECT certification_code.certification_code FROM certification_code WHERE method = #{mobilePhoneNumber}
 	</select>
+	
+	<!-- Bizcard Detail Info -->
+	<select id="queryAppBizcard" parameterType="string" resultType="hashmap">
+		/* queryAppBizcard */
+		SELECT company_name, name, phone_number, mobile_phone_number, mail, office_addr, position, image_url, date_format(regdate, '%Y-%m-%d %H:%i:%s') regdate FROM app_bizcard WHERE SEQUENCE = #{sequence}
+	</select>
 </mapper>
