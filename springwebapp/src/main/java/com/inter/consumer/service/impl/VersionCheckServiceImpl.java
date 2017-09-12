@@ -46,7 +46,6 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 			
 			result.putAll(versionCheckInfo);
 			result.put("result_code", 200);
-			System.out.println(result);
 		} else {
 			result.put("result_code", 500);
 		}
