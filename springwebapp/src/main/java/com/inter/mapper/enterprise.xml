@@ -16,5 +16,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT count(*) FROM app_enterprise_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
 	</select>
 	
+	<!-- Signup Superuser -->
+	<insert id="insertAppEnterprise" parameterType="map">
+		/* insertAppEnterprise */
+		INSERT INTO app_enterprise
+        (enterprise_key, name, registration_number, corporate_body_name, mobile_phone_number, address, website, mail, phone_number, type, reg_time)
+        VALUES
+        (null, #{name}, #{registration_number}, #{corporate_body_name}, #{mobile_phone_number}, #{address}, #{website}, #{mail}, #{phone_number}, #{type}, #{time})
+        <selectKey resultType="int" keyProperty="enterprise_key" order="AFTER">
+        	SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
 	
+	<insert id="insertAppEnterpriseUser" parameterType="map">
+		/* insertAppEnterpriseUser */
+		INSERT INTO app_enterprise_user 
+		(enterprise_user_key, enterprise_key, id, password, name, auth, reg_time) 
+		VALUES 
+		(null, #{enterprise_key}, #{ID}, #{password}, #{corporate_body_name}, 'AU00', #{time})
+	</insert>
 </mapper>
