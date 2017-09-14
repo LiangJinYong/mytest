@@ -8,12 +8,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Version Check -->
 	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
 		/* getVersionCheckCount */
-		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM FROM app_enterprise_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_enterprise_version WHERE os_type = #{osType})
+		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM 
+		FROM app_enterprise_version 
+		WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_enterprise_version WHERE os_type = #{osType})
 	</select>
 	
 	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
 		/* getVersionCheckCountByVersionCode */
-		SELECT count(*) FROM app_enterprise_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
+		SELECT count(*) 
+		FROM app_enterprise_version 
+		WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
 	</select>
 	
 	<!-- Signup Superuser -->
@@ -63,4 +67,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* updateToken */
 		UPDATE app_enterprise_user SET token = #{token} WHERE id = #{ID}
 	</update>
+	
+	<!-- User List -->
+	<select id="queryUserList" parameterType="int" resultType="hashmap">
+		/* queryUserList */
+		SELECT enterprise_user_key, id, name, auth 
+		FROM app_enterprise_user 
+		WHERE enterprise_key = #{enterpriseKey} AND auth IN ('AU02', 'AU03') ORDER BY auth ASC, name ASC
+	</select>
 </mapper>
