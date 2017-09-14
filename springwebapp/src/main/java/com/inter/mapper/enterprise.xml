@@ -49,4 +49,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		VALUES 
 		(null, #{enterpriseKey}, #{ID}, #{password}, #{name}, 'AU02', #{time})
 	</insert>
+	
+	<!-- Login -->
+	<select id="queryAppEnterpriseUserById" parameterType="map" resultType="hashmap">
+		/* queryAppEnterpriseUserById */
+		SELECT app_enterprise_user.id, app_enterprise_user.name, app_enterprise_user.auth, app_enterprise_user.password, app_enterprise.type 
+		FROM app_enterprise_user LEFT JOIN app_enterprise 
+		ON app_enterprise_user.enterprise_key = app_enterprise.enterprise_key 
+		WHERE app_enterprise_user.id = #{ID}
+	</select>
+	
+	<update id="updateToken" parameterType="map">
+		/* updateToken */
+		UPDATE app_enterprise_user SET token = #{token} WHERE id = #{ID}
+	</update>
 </mapper>
