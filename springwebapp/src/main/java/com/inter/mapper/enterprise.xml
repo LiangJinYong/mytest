@@ -86,4 +86,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* updateUserInfo */
 		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE enterprise_user_key = #{enterprise_user_key}
 	</update>
+	
+	<!-- Activate User -->
+	<update id="updateUserAuth" parameterType="map">
+		/* updateUserAuth */
+		UPDATE app_enterprise_user SET auth = 'AU02' WHERE enterprise_user_key = #{enterprise_user_key}
+	</update>
 </mapper>
