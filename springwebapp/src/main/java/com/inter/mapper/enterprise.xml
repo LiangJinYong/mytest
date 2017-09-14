@@ -75,4 +75,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		FROM app_enterprise_user 
 		WHERE enterprise_key = #{enterpriseKey} AND auth IN ('AU02', 'AU03') ORDER BY auth ASC, name ASC
 	</select>
+	
+	<!-- Modify User Info -->
+	<select id="queryAppEnterpriseUserByEnterpriseUserKey" parameterType="int" resultType="hashmap">
+		/* queryAppEnterpriseUserByEnterpriseUserKey */
+		SELECT * FROM app_enterprise_user WHERE enterprise_user_key = #{enterpriseUserKey} AND (auth = 'AU02' OR auth = 'AU03')
+	</select>
+	
+	<update id="updateUserInfo" parameterType="map">
+		/* updateUserInfo */
+		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE enterprise_user_key = #{enterprise_user_key}
+	</update>
 </mapper>
