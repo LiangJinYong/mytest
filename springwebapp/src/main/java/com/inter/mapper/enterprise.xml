@@ -35,4 +35,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		VALUES 
 		(null, #{enterprise_key}, #{ID}, #{password}, #{corporate_body_name}, 'AU00', #{time})
 	</insert>
+	
+	<!-- Create User -->
+	<select id="queryAppEnterpriseUserByToken" parameterType="map" resultType="hashmap">
+		/* queryAppEnterpriseUserByToken */
+		SELECT enterprise_key, auth FROM app_enterprise_user WHERE token =  #{token}
+	</select>
+	
+	<insert id="insertNormalAppEnterpriseUser" parameterType="map">
+		/* insertNormalAppEnterpriseUser */
+		INSERT INTO app_enterprise_user 
+		(enterprise_user_key, enterprise_key, id, password, name, auth, reg_time) 
+		VALUES 
+		(null, #{enterpriseKey}, #{ID}, #{password}, #{name}, 'AU02', #{time})
+	</insert>
 </mapper>
