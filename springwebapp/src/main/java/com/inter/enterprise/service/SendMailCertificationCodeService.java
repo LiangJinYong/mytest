@@ -1,4 +1,4 @@
-package com.inter.enterprise.dao;
+package com.inter.enterprise.service;
 
 import java.util.Map;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.inter.enterprise.dao.SendMailCertificationCodeService;
+import com.inter.enterprise.service.SendMailCertificationCodeService;
 import com.inter.util.RequestParamUtil;
 
 @Controller
@@ -32,11 +32,9 @@ public class SendMailCertificationCodeController {
 	public String sendMailCertificationCode(HttpServletRequest request) {
 		
 		Map<String, String[]> paramMap = request.getParameterMap();
-
 		Map<String, String> param = RequestParamUtil.getParamMap(paramMap);
 		
 		String result = sendMailCertificationCodeService.sendMailCertificationCode(param);
-
-		return "send mail";
+		return result;
 	}
 }

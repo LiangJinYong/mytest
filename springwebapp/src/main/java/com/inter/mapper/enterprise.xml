@@ -107,4 +107,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		VALUES 
 		(null, #{product_name}, #{mobile_phone_number}, #{id_card_number}, #{amount}, #{address}, #{time}, 'RQ')
 	</insert>
+	
+	<!-- Send Mail Certification Code -->
+	<select id="queryAppEnterpriseCount" parameterType="map" resultType="int">
+		/* queryAppEnterpriseCount */
+		SELECT count(*) FROM app_enterprise WHERE mail = #{mail}
+	</select>
+	
+	<insert id="insertMailCertificationCode" parameterType="map">
+		/* insertMailCertificationCode */
+		INSERT INTO mail_certification_code (mail, certification_code, time) VALUES (#{mail}, #{certification_code}, #{time})
+        ON DUPLICATE KEY
+        UPDATE certification_code = #{certification_code}, time = #{time}, mail = #{mail}
+	</insert>
 </mapper>

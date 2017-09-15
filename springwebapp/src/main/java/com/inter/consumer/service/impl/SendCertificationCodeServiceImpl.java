@@ -2,7 +2,6 @@ package com.inter.consumer.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,7 @@ import com.inter.consumer.dao.SendCertificationCodeDao;
 import com.inter.consumer.service.SendCertificationCodeService;
 import com.inter.util.GetTimeUtil;
 import com.inter.util.HttpUtil;
+import com.inter.util.MakeCertificationCodeUtil;
 
 import net.sf.json.JSONObject;
 
@@ -28,7 +28,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 	public String sendCertificationCode(Map<String, String> param) {
 		String mobilePhoneNumber = param.get("mobile_phone_number");
 
-		String certificationCode = makeCertificationCode();
+		String certificationCode = MakeCertificationCodeUtil.makeCertificationCode();
 
 		String time = GetTimeUtil.getTime();
 
@@ -37,7 +37,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 		try {
 			param.put("certificationCode", certificationCode);
 			param.put("time", time);
-			
+
 			sendCertificationCodeDao.insertCertificationCode(param);
 
 			String appKey = "38eac23f5c3697c1";
@@ -88,15 +88,4 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 
 	}
 
-	private String makeCertificationCode() {
-		StringBuilder sb = new StringBuilder();
-		Random random = new Random();
-
-		for (int i = 0; i < 6; i++) {
-			int randomInt = random.nextInt(10);
-			sb.append(randomInt);
-		}
-
-		return sb.toString();
-	}
 }
