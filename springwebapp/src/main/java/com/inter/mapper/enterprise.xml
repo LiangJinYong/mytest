@@ -98,4 +98,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* updateUserAuthDeactivate */
 		UPDATE app_enterprise_user SET auth = 'AU03' WHERE enterprise_user_key = #{enterprise_user_key}
 	</update>
+	
+	<!-- Request Sticker -->
+	<insert id="insertRequestSticker" parameterType="map">
+		/* insertRequestSticker */
+		INSERT INTO app_enterprise_request_sticker 
+		(enterprise_request_sticker_key, product_name, mobile_phone_number, id_card_number, amount, address, time, status) 
+		VALUES 
+		(null, #{product_name}, #{mobile_phone_number}, #{id_card_number}, #{amount}, #{address}, #{time}, 'RQ')
+	</insert>
 </mapper>
