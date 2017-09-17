@@ -120,4 +120,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ON DUPLICATE KEY
         UPDATE certification_code = #{certification_code}, time = #{time}, mail = #{mail}
 	</insert>
+	
+	<!-- Confirm Mail Certification Code -->
+	<select id="queryCertificationCode" parameterType="map" resultType="hashmap">
+		/* queryCertificationCode */
+		SELECT mail_certification_code.certification_code FROM mail_certification_code WHERE mail = #{mail}
+	</select>
 </mapper>
