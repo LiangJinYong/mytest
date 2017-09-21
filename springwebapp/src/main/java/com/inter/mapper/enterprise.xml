@@ -227,4 +227,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		LIMIT 20
 	</select>
 	
+	
+	<!-- Enterprise Physical Distribution Enterprise List -->
+	<select id="queryPhysicalDistributionEnterpriseList" parameterType="map" resultType="hashmap">
+		/* queryPhysicalDistributionEnterpriseList */
+		SELECT lian_biz_info.BIZ_ID, lian_biz_info.BIZ_NAME
+		FROM app_physical_distribution
+	    LEFT JOIN re_seq
+        ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
+	    LEFT JOIN lian_order_info
+        ON lian_order_info.ORDER_SEQ = re_seq.ORDERNUMBER
+	    LEFT JOIN lian_user_info
+        ON lian_user_info.USER_ID = lian_order_info.USER_ID
+	    LEFT JOIN lian_biz_info
+        ON lian_biz_info.BIZ_ID = lian_user_info.BIZ_ID
+        <if test="auth == 'AU01'">
+		    LEFT JOIN app_enterprise_user
+	        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
+			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
+        </if>
+		<if test="auth == 'AU02'">
+			WHERE app_physical_distribution.enterprise_user_key = #{enterprise_user_key}
+		</if>
+		<if test="BIZ_NAME != ''">
+			AND lian_biz_info.BIZ_NAME &gt; #{BIZ_NAME}
+		</if>
+		GROUP BY lian_biz_info.BIZ_ID
+		ORDER BY lian_biz_info.BIZ_NAME ASC
+		LIMIT 20
+	</select>
 </mapper>
