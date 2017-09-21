@@ -25,7 +25,6 @@ public class VerificationHistoryServiceImpl implements VerificationHistoryServic
 		
 		String logJson = gson.toJson(paramMap);
 		
-
 		verificationHistoryDao.verificationHistory(logJson);
 	}
 

@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.inter.enterprise.service.UserListService;
 
 @Controller
-@RequestMapping("/enterprise") class UserListController {
+@RequestMapping("/enterprise")
+class UserListController {
 
 	@Autowired
 	private UserListService userListService;
@@ -21,15 +22,15 @@ import com.inter.enterprise.service.UserListService;
 	public void setUserListService(UserListService userListService) {
 		this.userListService = userListService;
 	}
-	
+
 	@RequestMapping("/userList")
 	@ResponseBody
 	public String userList(HttpServletRequest request) {
 		String token = request.getHeader("token");
-		
+
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("token", token);
-		
+
 		String result = userListService.userList(param);
 		return result;
 	}

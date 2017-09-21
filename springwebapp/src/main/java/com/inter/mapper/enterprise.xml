@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Create User -->
 	<select id="queryAppEnterpriseUserByToken" parameterType="map" resultType="hashmap">
 		/* queryAppEnterpriseUserByToken */
-		SELECT enterprise_key, auth FROM app_enterprise_user WHERE token =  #{token}
+		SELECT enterprise_user_key, enterprise_key, auth, password FROM app_enterprise_user WHERE token = #{token}
 	</select>
 	
 	<insert id="insertNormalAppEnterpriseUser" parameterType="map">
@@ -87,6 +87,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE enterprise_user_key = #{enterprise_user_key}
 	</update>
 	
+	<!-- Modify My Info -->
+	<update id="updateMyInfo" parameterType="map">
+		/* updateMyInfo */
+		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE token = #{token}
+	</update>
+	
 	<!-- Activate User -->
 	<update id="updateUserAuth" parameterType="map">
 		/* updateUserAuth */
@@ -126,4 +132,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* queryCertificationCode */
 		SELECT mail_certification_code.certification_code FROM mail_certification_code WHERE mail = #{mail}
 	</select>
+	
+	<!-- Enterprise Physical Distribution -->
+	<select id="querySequence" parameterType="string" resultType="hashmap">
+		/* querySequence */
+		SELECT re_seq.SEQUENCE FROM re_seq WHERE SEQUENCE = #{sequence}
+	</select>
+	
+	<select id="queryAppPhysicalDistributionType" parameterType="string" resultType="hashmap">
+		/* queryAppPhysicalDistributionType */
+		SELECT app_physical_distribution.type
+        FROM app_physical_distribution
+        WHERE time = (SELECT MAX(time) FROM app_physical_distribution WHERE SEQUENCE = #{SEQUENCE})
+        AND SEQUENCE = #{SEQUENCE}
+	</select>
+	
+	<insert id="insertAppPhysicalDistribution" parameterType="map">
+		/* insertAppPhysicalDistribution */
+		INSERT INTO app_physical_distribution 
+		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key) 
+		VALUES 
+		(null, #{SEQUENCE}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterprise_user_key})
+	</insert>
 </mapper>
