@@ -5,14 +5,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.inter.enterprise.service.EnterprisePhysicalDistributionListService;
 import com.inter.util.RequestParamUtil;
 
-@RestController
+@Controller
 @RequestMapping("/enterprise")
 public class EnterprisePhysicalDistributionListController {
 
@@ -24,9 +24,9 @@ public class EnterprisePhysicalDistributionListController {
 		this.enterprisePhysicalDistributionListService = enterprisePhysicalDistributionListService;
 	}
 	
-	@RequestMapping("/enterprisePhysicalDistributionList")
+	@RequestMapping("/physicalDistributionList")
 	@ResponseBody
-	public String enterprisePhysicalDistributionList(HttpServletRequest request) {
+	public String physicalDistributionList(HttpServletRequest request) {
 		
 		Map<String, String[]> paramMap = request.getParameterMap();
 		Map<String, String> param = RequestParamUtil.getParamMap(paramMap);

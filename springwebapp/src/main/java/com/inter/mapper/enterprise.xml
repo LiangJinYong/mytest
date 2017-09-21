@@ -165,4 +165,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE app_physical_distribution.SEQUENCE = #{SEQUENCE}
         ORDER BY app_physical_distribution.time DESC
 	</select>
+	
+	<!-- Enterprise Physical Distribution Sequence List -->
+	<select id="queryPhysicalDistributionSequenceList" parameterType="map" resultType="hashmap">
+		/* queryPhysicalDistributionSequenceList */
+		SELECT re_seq.SEQUENCE, re_seq.SKU_CODE
+		FROM app_physical_distribution
+	    LEFT JOIN re_seq
+        ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
+	    LEFT JOIN lian_order_info
+        ON lian_order_info.ORDER_SEQ = re_seq.ORDERNUMBER
+	    LEFT JOIN lian_user_info
+        ON lian_user_info.USER_ID = lian_order_info.USER_ID
+	    LEFT JOIN lian_biz_info
+        ON lian_biz_info.BIZ_ID = lian_user_info.BIZ_ID
+        <if test="auth == 'AU01'">
+		    LEFT JOIN app_enterprise_user
+	        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
+			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
+        </if>
+        <if test="auth == 'AU02'">
+			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
+        </if>
+	    AND lian_user_info.BIZ_ID = #{BIZ_ID}
+	    AND lian_order_info.SVC_NM = #{SVC_NM}
+	    <if test="SEQUENCE != ''">
+	    	AND re_seq.SEQUENCE &lt; #{SEQUENCE}
+	    </if>
+		GROUP BY re_seq.SEQUENCE
+		ORDER BY re_seq.SEQUENCE DESC
+		LIMIT 20
+	</select>
 </mapper>
