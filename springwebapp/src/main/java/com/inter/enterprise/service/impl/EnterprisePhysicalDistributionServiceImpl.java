@@ -31,7 +31,7 @@ public class EnterprisePhysicalDistributionServiceImpl implements EnterprisePhys
 		
 		if (appEnterpriseUser != null) {
 			int enterpriseUserKey = (Integer) appEnterpriseUser.get("enterprise_user_key");
-			param.put("enterprise_user_key", String.valueOf(enterpriseUserKey));
+			param.put("enterpriseUserKey", String.valueOf(enterpriseUserKey));
 			
 			String auth = (String) appEnterpriseUser.get("auth");
 			

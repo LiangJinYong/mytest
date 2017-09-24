@@ -70,10 +70,7 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 				lastQuestionKey = (Integer) questionAnswer.get("question_key");
 			}
 
-			if (dataList.size() > 0) {
-				result.put("data", dataList);
-			}
-
+			result.put("data", dataList);
 			result.put("result_code", 200);
 		} else {
 			result.put("result_code", 403);

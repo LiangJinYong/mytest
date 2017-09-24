@@ -150,10 +150,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insertAppPhysicalDistribution" parameterType="map">
 		/* insertAppPhysicalDistribution */
 		INSERT INTO app_physical_distribution 
-		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key) 
+		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key, province, city, district, full_address) 
 		VALUES 
-		(null, #{SEQUENCE}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterprise_user_key})
+		(null, #{SEQUENCE}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterpriseUserKey}, #{province}, #{city}, #{district}, #{fullAddress})
 	</insert>
+	
+	<!-- Enterprise Physical Distribution Watermark Key -->
+	<select id="querySeqByWatermarkKey" parameterType="map" resultType="hashmap">
+		/* querySeqByWatermarkKey */
+		SELECT re_seq.SEQUENCE FROM re_seq WHERE WATERMARK_KEY = #{WATERMARK_KEY}
+	</select>
+	
+	<select id="queryDistributionType" parameterType="string" resultType="hashmap">
+		/* queryDistributionType */
+		SELECT app_physical_distribution.type
+        FROM app_physical_distribution
+        WHERE time = (SELECT MAX(time) FROM app_physical_distribution WHERE SEQUENCE = #{SEQUENCE})
+        AND SEQUENCE = #{SEQUENCE}
+	</select>
 	
 	<!-- Enterprise Physical Distribution List -->
 	<select id="queryPhysicalDistributionList" parameterType="map" resultType="hashmap">

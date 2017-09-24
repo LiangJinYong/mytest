@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertAppQuestion" parameterType="map">
 		/* insertAppQuestion */
-		INSERT INTO app_question (question_key, content, registration_time, user_key) VALUES (null, #{content}, #{time}, #{userKey})
+		INSERT INTO app_question (question_key, content, registration_time, token) VALUES (null, #{content}, #{time}, #{token})
 	</insert>
 	
 	<!-- Get Question List -->
@@ -51,9 +51,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="queryQuestionAnswerList" parameterType="string" resultType="hashmap">
 		/* queryQuestionAnswerList */
-		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, q.user_key AS user_key, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
+		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, (SELECT user_key FROM app_user WHERE token = #{token}) AS user_key, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
 		FROM app_question q LEFT JOIN app_answer a ON q.question_key = a.question_key
-		WHERE user_key = (SELECT user_key FROM app_user WHERE token = #{token})
+		WHERE token = #{token}
 		ORDER BY question_key ASC, registration_time DESC
 	</select>
 	
@@ -78,11 +78,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Physical Distribution List -->
 	<select id="queryPhysicalDistributionInfo" parameterType="string" resultType="hashmap">
 		/* queryPhysicalDistributionInfo */
-		SELECT app_enterprise_user.name AS enterprise_user_name, app_enterprise.name AS enterprise_name, app_enterprise.type AS enterprise_type, app_physical_distribution.latitude, app_physical_distribution.longitude, app_physical_distribution.time, app_physical_distribution.type AS product_distribution_type
-		FROM app_physical_distribution LEFT JOIN app_enterprise_user ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
-		LEFT JOIN app_enterprise ON app_enterprise_user.enterprise_key = app_enterprise.enterprise_key
-		WHERE app_physical_distribution.SEQUENCE = #{sequence}
-		ORDER BY app_physical_distribution.time DESC
+		SELECT eu.name AS enterprise_user_name, e.name AS enterprise_name, e.type AS enterprise_type, pd.latitude, pd.longitude, pd.time, pd.type AS product_distribution_type, pd.province, pd.city, pd.district, pd.full_address
+		FROM app_physical_distribution pd LEFT JOIN app_enterprise_user eu ON eu.enterprise_user_key = pd.enterprise_user_key
+		LEFT JOIN app_enterprise e ON eu.enterprise_key = e.enterprise_key
+		WHERE pd.SEQUENCE = #{sequence}
+		ORDER BY pd.time DESC
 	</select>
 	
 	<!-- ReWrite -->
