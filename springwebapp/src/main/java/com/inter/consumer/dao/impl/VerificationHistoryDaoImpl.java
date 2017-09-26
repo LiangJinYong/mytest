@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.google.gson.Gson;
 import com.inter.consumer.dao.VerificationHistoryDao;
 import com.mongodb.DBCollection;
 
@@ -21,9 +20,7 @@ public class VerificationHistoryDaoImpl implements VerificationHistoryDao {
 	public void verificationHistory(String logJson) {
 		DBCollection logCollection = mongoTemplate.getCollection("log");
 
-		Gson gson = new Gson();
 		mongoTemplate.insert(logJson, "log");
 	}
-	
-	
+
 }

@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface VerificationHistoryService {
 
-	void verificationHistory(Map<String, String> paramMap);
+	String verificationHistory(Map<String, String> param);
 
 }

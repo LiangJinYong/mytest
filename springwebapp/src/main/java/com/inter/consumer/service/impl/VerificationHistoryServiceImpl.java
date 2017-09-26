@@ -1,5 +1,6 @@
 package com.inter.consumer.service.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,21 @@ public class VerificationHistoryServiceImpl implements VerificationHistoryServic
 		this.verificationHistoryDao = verificationHistoryDao;
 	}
 
-	public void verificationHistory(Map<String, String> paramMap) {
+	public String verificationHistory(Map<String, String> param) {
+			
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		String history = param.get("history");
+		
+		try {
+			verificationHistoryDao.verificationHistory(history);
+			result.put("result_code", 200);
+		} catch (Exception e) {
+			result.put("result_code", 404);
+		}
 		
 		Gson gson = new Gson();
-		
-		String logJson = gson.toJson(paramMap);
-		
-		verificationHistoryDao.verificationHistory(logJson);
+		return gson.toJson(result);
 	}
 
 }

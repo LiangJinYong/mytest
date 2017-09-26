@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,9 +23,6 @@ public class SendMailCertificationCodeController {
 		this.sendMailCertificationCodeService = sendMailCertificationCodeService;
 	}
 	
-	@Autowired
-	private ApplicationContext context;
-
 	@RequestMapping("/sendMailCertificationCode")
 	@ResponseBody
 	public String sendMailCertificationCode(HttpServletRequest request) {
