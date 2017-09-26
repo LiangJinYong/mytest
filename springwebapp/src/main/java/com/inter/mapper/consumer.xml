@@ -24,12 +24,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<update id="updateAppUser" parameterType="map">
 		/* updateAppUser */
-		UPDATE app_user SET os_type = #{os_type}, os_version = #{os_version}, device = #{device}, token = #{token}, regdate = #{time} WHERE mobile_phone_number = #{mobile_phone_number}
+		UPDATE app_user SET os_type = #{os_type}, os_version = #{os_version}, device = #{device}, token = #{token}, manufacture = #{manufacture}, regdate = #{time} WHERE mobile_phone_number = #{mobile_phone_number}
 	</update>
 	
 	<insert id="insertAppUser" parameterType="map">
 		/* insertAppUser */
-		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, regdate) VALUES (null, #{mobile_phone_number}, #{os_type}, #{os_version}, #{device}, #{token}, #{time})
+		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, manufacture, regdate) VALUES (null, #{mobile_phone_number}, #{os_type}, #{os_version}, #{device}, #{token}, #{manufacture}, #{time})
 	</insert>
 	
 	<!-- Register Question -->
