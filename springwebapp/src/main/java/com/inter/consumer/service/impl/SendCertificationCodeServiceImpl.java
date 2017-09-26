@@ -27,6 +27,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 
 	public String sendCertificationCode(Map<String, String> param) {
 		String mobilePhoneNumber = param.get("mobile_phone_number");
+		String originalPhoneNumber = param.get("original_phone_number");
 
 		String certificationCode = MakeCertificationCodeUtil.makeCertificationCode();
 
@@ -46,7 +47,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 
 			Map<String, String> datas = new HashMap<String, String>();
 			datas.put("appkey", appKey);
-			datas.put("mobile", mobilePhoneNumber);
+			datas.put("mobile", originalPhoneNumber);
 			datas.put("content", content);
 
 			int status = Integer.parseInt(sendPost(URL, datas));
