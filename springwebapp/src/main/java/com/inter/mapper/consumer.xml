@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Version Check -->
 	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
 		/* getVersionCheckCount */
-		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
+		SELECT current_version_code AS currentVersionCode, current_version_name AS currentVersionName, is_forced_update AS isForceUpdate, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') AS updateDttm FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
 	</select>
 	
 	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
@@ -24,12 +24,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<update id="updateAppUser" parameterType="map">
 		/* updateAppUser */
-		UPDATE app_user SET os_type = #{os_type}, os_version = #{os_version}, device = #{device}, token = #{token}, manufacture = #{manufacture}, regdate = #{time} WHERE mobile_phone_number = #{mobile_phone_number}
+		UPDATE app_user SET os_type = #{osType}, os_version = #{osVersion}, device = #{device}, token = #{token}, manufacture = #{manufacture}, regdate = #{time} WHERE mobile_phone_number = #{mobilePhoneNumber}
 	</update>
 	
 	<insert id="insertAppUser" parameterType="map">
 		/* insertAppUser */
-		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, manufacture, regdate) VALUES (null, #{mobile_phone_number}, #{os_type}, #{os_version}, #{device}, #{token}, #{manufacture}, #{time})
+		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, manufacture, regdate) VALUES (null, #{mobilePhoneNumber}, #{osType}, #{osVersion}, #{device}, #{token}, #{manufacture}, #{time})
 	</insert>
 	
 	<!-- Register Question -->
@@ -60,19 +60,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Send Certification Code -->
 	<insert id="insertCertificationCode" parameterType="map">
 		/* insertCertificationCode */
-		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobile_phone_number}, #{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobile_phone_number}
+		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobilePhoneNumber}, #{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobilePhoneNumber}
 	</insert>
 	
 	<!-- Confirm Certification Code -->
 	<select id="queryCertificationCode" parameterType="string" resultType="string">
 		/* queryCertificationCode */
 		SELECT certification_code.certification_code FROM certification_code WHERE method = #{mobilePhoneNumber}
-	</select>
-	
-	<!-- Bizcard Detail Info -->
-	<select id="queryAppBizcard" parameterType="string" resultType="hashmap">
-		/* queryAppBizcard */
-		SELECT company_name, name, phone_number, mobile_phone_number, mail, office_addr, position, image_url, date_format(regdate, '%Y-%m-%d %H:%i:%s') regdate FROM app_bizcard WHERE SEQUENCE = #{sequence}
 	</select>
 	
 	<!-- Physical Distribution List -->

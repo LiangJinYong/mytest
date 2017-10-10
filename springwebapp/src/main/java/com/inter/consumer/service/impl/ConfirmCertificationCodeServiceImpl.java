@@ -23,21 +23,21 @@ public class ConfirmCertificationCodeServiceImpl implements ConfirmCertification
 	public String confirmCertificationCode(Map<String, String> param) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		
-		String mobilePhoneNumber = param.get("mobile_phone_number");
+		String mobilePhoneNumber = param.get("mobilePhoneNumber");
 		
 		String certificationCodeDB = confirmCertificationCodeDao.queryCertificationCode(mobilePhoneNumber);
 		
 		if (certificationCodeDB != null) {
-			String certificationCode = param.get("certification_code").trim();
+			String certificationCode = param.get("certificationCode").trim();
 			
 			if (certificationCodeDB.equals(certificationCode)) {
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} else {
-				result.put("result_code", 400);
+				result.put("resultCode", 400);
 			}
 			
 		} else {
-			result.put("result_code", 404);
+			result.put("resultCode", 404);
 		}
 		
 		Gson gson = new Gson();

@@ -21,8 +21,8 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 	}
 
 	public String versionCheck(Map<String, String> param) {
-		String osType = param.get("os_type");
-		int currentVersionCodeParam = Integer.parseInt(param.get("current_version_code"));
+		String osType = param.get("osType");
+		int currentVersionCodeParam = Integer.parseInt(param.get("currentVersionCode"));
 		
 		Map<String, Object> versionCheckInfo = versionCheckDao.getVersionCheckByOSType(osType);
 
@@ -30,24 +30,24 @@ public class VersionCheckServiceImpl implements VersionCheckService {
 
 		if (versionCheckInfo != null) {
 			
-			int currentVersionCodeDB = (Integer) versionCheckInfo.get("current_version_code");
+			int currentVersionCodeDB = (Integer) versionCheckInfo.get("currentVersionCode");
 			
 			if (currentVersionCodeParam == currentVersionCodeDB) {
-				versionCheckInfo.put("is_forced_update", false);
+				versionCheckInfo.put("isForceUpdate", false);
 			} else {
 				int count = versionCheckDao.getVersionCheckCountByVersionCode(currentVersionCodeParam, currentVersionCodeDB);
 				
 				if (count > 0) {
-					versionCheckInfo.put("is_forced_update", true);
+					versionCheckInfo.put("isForceUpdate", true);
 				} else {
-					versionCheckInfo.put("is_forced_update", false);
+					versionCheckInfo.put("isForceUpdate", false);
 				}
 			}
 			
 			result.putAll(versionCheckInfo);
-			result.put("result_code", 200);
+			result.put("resultCode", 200);
 		} else {
-			result.put("result_code", 500);
+			result.put("resultCode", 500);
 		}
 		
 		Gson gson = new Gson();

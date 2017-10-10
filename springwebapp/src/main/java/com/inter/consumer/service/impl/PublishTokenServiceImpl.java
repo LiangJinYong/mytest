@@ -27,7 +27,7 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 
 	public String publishToken(Map<String, String> param) {
 
-		String mobilePhoneNumber = param.get("mobile_phone_number");
+		String mobilePhoneNumber = param.get("mobilePhoneNumber");
 		String device = param.get("device");
 
 		String token = createToken(mobilePhoneNumber, device);
@@ -45,18 +45,18 @@ public class PublishTokenServiceImpl implements PublishTokenService {
 				publishTokenDao.updateAppUser(param);
 				
 				result.put("token", token);
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} catch(Exception e) {
-				result.put("result_code", 500);
+				result.put("resultCode", 500);
 			}
 		} else {
 			try {
 				publishTokenDao.insertAppUser(param);
 				
 				result.put("token", token);
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} catch(Exception e) {
-				result.put("result_code", 500);
+				result.put("resultCode", 500);
 			}
 		}
 		

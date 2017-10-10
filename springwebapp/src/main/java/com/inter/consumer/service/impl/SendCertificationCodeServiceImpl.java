@@ -26,8 +26,7 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 	}
 
 	public String sendCertificationCode(Map<String, String> param) {
-		String mobilePhoneNumber = param.get("mobile_phone_number");
-		String originalPhoneNumber = param.get("original_phone_number");
+		String originalPhoneNumber = param.get("originalPhoneNumber");
 
 		String certificationCode = MakeCertificationCodeUtil.makeCertificationCode();
 
@@ -53,12 +52,12 @@ public class SendCertificationCodeServiceImpl implements SendCertificationCodeSe
 			int status = Integer.parseInt(sendPost(URL, datas));
 
 			if (status == 0) {
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} else {
-				result.put("result_code", 503);
+				result.put("resultCode", 503);
 			}
 		} catch (Exception e) {
-			result.put("result_code", 500);
+			result.put("resultCode", 500);
 		}
 
 		Gson gson = new Gson();
