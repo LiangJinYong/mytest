@@ -51,10 +51,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="queryQuestionAnswerList" parameterType="string" resultType="hashmap">
 		/* queryQuestionAnswerList */
-		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, (SELECT user_key FROM app_user WHERE token = #{token}) AS user_key, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
+		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
 		FROM app_question q LEFT JOIN app_answer a ON q.question_key = a.question_key
 		WHERE token = #{token}
 		ORDER BY question_key ASC, registration_time DESC
+	</select>
+	
+	<!-- Detail Info -->
+	<select id="getDetailInfo" parameterType="string" resultType="hashmap">
+	SELECT lian_order_info.*, lian_user_info.USER_NAME, lian_biz_info.BIZ_NAME, lian_biz_info.HOMEPAGE_ADDR, lian_biz_info.CORP_EMAIL, lian_biz_info.CORP_PHONE, re_seq.SKU_CODE as SKU_CODE_SEQUENCE FROM re_seq
+    LEFT JOIN lian_order_info
+    ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ
+    LEFT JOIN lian_user_info
+    ON lian_order_info.USER_ID = lian_user_info.USER_ID
+    LEFT JOIN lian_biz_info
+    ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
+    WHERE re_seq.SEQUENCE = #{sequence}
 	</select>
 	
 	<!-- Send Certification Code -->
@@ -72,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Physical Distribution List -->
 	<select id="queryPhysicalDistributionInfo" parameterType="string" resultType="hashmap">
 		/* queryPhysicalDistributionInfo */
-		SELECT eu.name AS enterprise_user_name, e.name AS enterprise_name, e.type AS enterprise_type, pd.latitude, pd.longitude, pd.time, pd.type AS product_distribution_type, pd.province, pd.city, pd.district, pd.full_address
+		SELECT eu.name AS enterpriseUserName, e.name AS enterpriseName, pd.latitude, pd.longitude, pd.time, pd.type AS productDistributionType, pd.full_address AS fullAddress
 		FROM app_physical_distribution pd LEFT JOIN app_enterprise_user eu ON eu.enterprise_user_key = pd.enterprise_user_key
 		LEFT JOIN app_enterprise e ON eu.enterprise_key = e.enterprise_key
 		WHERE pd.SEQUENCE = #{sequence}

@@ -1,9 +1,6 @@
 package com.inter.consumer.controller;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.inter.consumer.service.DetailInfoService;
+import com.inter.util.RequestParamUtil;
 
 @Controller
 @RequestMapping("/consumer")
@@ -29,14 +27,13 @@ public class DetailInfoController {
 	@ResponseBody
 	public String detailInfo(HttpServletRequest request) {
 		
-		Map<String, String[]> parameterMap = request.getParameterMap();
-		Map<String, String> paramMap = new HashMap<String, String>();
-		Set<Entry<String,String[]>> entrySet = parameterMap.entrySet();
-		for(Entry<String, String[]> entry : entrySet) {
-			paramMap.put(entry.getKey(), entry.getValue()[0]);
-		}
+		Map<String, String[]> paramMap = request.getParameterMap();
+		Map<String, String> param = RequestParamUtil.getParamMap(paramMap);
+
+		String token = request.getHeader("token");
+		param.put("token", token);
 		
-		String result = detailInfoService.detailInfo(paramMap);
+		String result = detailInfoService.detailInfo(param);
 		return result;
 	}
 }

@@ -51,13 +51,13 @@ public class SendMailCertificationCodeServiceImpl implements SendMailCertificati
 				message.setText("您的验证码是 :" + certificationCode);
 				mailSender.send(message);
 
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} catch (Exception e) {
-				result.put("result_code", 500);
+				result.put("resultCode", 500);
 				e.printStackTrace();
 			}
 		} else {
-			result.put("result_code", 409);
+			result.put("resultCode", 409);
 		}
 
 		Gson gson = new Gson();

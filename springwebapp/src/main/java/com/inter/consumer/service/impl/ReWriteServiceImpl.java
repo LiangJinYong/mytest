@@ -20,7 +20,7 @@ public class ReWriteServiceImpl implements ReWriteService {
 	}
 
 	public String reWrite(Map<String, String> param) {
-		String watermarkKey = param.get("watermark_key");
+		String watermarkKey = param.get("watermarkKey");
 
 		List<String> homepageAddr = reWriteDao.queryHomepageAddr(watermarkKey);
 

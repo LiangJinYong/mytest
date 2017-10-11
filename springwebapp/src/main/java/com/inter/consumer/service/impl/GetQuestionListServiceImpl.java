@@ -49,10 +49,8 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 					dataMap = new HashMap<String, Object>();
 					answerList = new ArrayList<Map<String, Object>>();
 
-					dataMap.put("question_key", questionAnswer.get("question_key"));
 					dataMap.put("content", questionAnswer.get("content"));
-					dataMap.put("registration_time", questionAnswer.get("registration_time"));
-					dataMap.put("user_key", questionAnswer.get("user_key"));
+					dataMap.put("registrationTime", questionAnswer.get("registration_time"));
 
 					dataMap.put("answer", answerList);
 					dataList.add(dataMap);
@@ -60,9 +58,9 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 
 				if (questionAnswer.get("answer_key") != null) {
 					answerMap = new HashMap<String, Object>();
-					answerMap.put("answer_key", questionAnswer.get("answer_key"));
+					answerMap.put("answerKey", questionAnswer.get("answer_key"));
 					answerMap.put("content", questionAnswer.get("a_content"));
-					answerMap.put("registration_time", questionAnswer.get("a_registration_time"));
+					answerMap.put("registrationTime", questionAnswer.get("a_registration_time"));
 
 					answerList.add(answerMap);
 				}
@@ -71,9 +69,9 @@ public class GetQuestionListServiceImpl implements GetQuestionListService {
 			}
 
 			result.put("data", dataList);
-			result.put("result_code", 200);
+			result.put("resultCode", 200);
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
 
 		Gson gson = new Gson();

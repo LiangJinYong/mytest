@@ -30,13 +30,13 @@ public class PhysicalDistributionListServiceImpl implements PhysicalDistribution
 		int appUserCount = physicalDistributionListDao.queryAppUserCount(token);
 
 		if (appUserCount > 0) {
-			String sequence = param.get("SEQUENCE");
+			String sequence = param.get("sequence");
 			List<Map<String, Object>> physicalDistributionInfo = physicalDistributionListDao.queryPhysicalDistributionInfo(sequence);
 
-			result.put("result_code", 200);
+			result.put("resultCode", 200);
 			result.put("data", physicalDistributionInfo);
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
 
 		Gson gson = new Gson();
