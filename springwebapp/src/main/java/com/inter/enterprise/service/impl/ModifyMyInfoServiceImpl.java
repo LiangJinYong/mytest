@@ -36,12 +36,12 @@ public class ModifyMyInfoServiceImpl implements ModifyMyInfoService {
 			
 			try {
 				modifyMyInfoDao.updateAppEnterpriseUser(param);
-				result.put("result_code", 200);	
+				result.put("resultCode", 200);	
 			} catch (Exception e) {
-				result.put("result_code", 500);	
+				result.put("resultCode", 500);	
 			}
 		} else {
-			result.put("result_code", 403);	
+			result.put("resultCode", 403);	
 		}
 		
 		Gson gson = new Gson();

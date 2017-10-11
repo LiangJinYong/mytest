@@ -35,7 +35,7 @@ public class LoginServiceImpl implements LoginService {
 			String passwordDb = (String) appEnterpriseUser.get("password");
 			
 			if (passwordParam.equals(passwordDb)) {
-				String id = param.get("ID");
+				String id = param.get("id");
 				String token = createToken(id);
 				
 				param.put("token", token);
@@ -49,15 +49,15 @@ public class LoginServiceImpl implements LoginService {
 					result.put("name", appEnterpriseUser.get("name"));
 					result.put("token", token);
 					
-					result.put("result_code", 200);
+					result.put("resultCode", 200);
 				} catch (Exception e) {
-					result.put("result_code", 500);
+					result.put("resultCode", 500);
 				}
 			} else {
-				result.put("result_code", 412);
+				result.put("resultCode", 412);
 			}
 		} else {
-			result.put("result_code", 412);
+			result.put("resultCode", 412);
 		}
 		
 		Gson gson = new Gson();

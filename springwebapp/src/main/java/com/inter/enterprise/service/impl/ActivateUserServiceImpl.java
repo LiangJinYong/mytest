@@ -31,7 +31,7 @@ public class ActivateUserServiceImpl implements ActivateUserService {
 			int superuserEnterpriseKey = (Integer) appEnterpriseUserByToken.get("enterprise_key");
 			String auth = (String) appEnterpriseUserByToken.get("auth");
 			
-			int enterpriseUserKey = Integer.parseInt(param.get("enterprise_user_key")); 
+			int enterpriseUserKey = Integer.parseInt(param.get("enterpriseUserKey")); 
 			
 			if ("AU01".equals(auth)) {
 				Map<String, Object> appEnterpriseUserByEnterpriseUserKey = activateUserDao.queryAppEnterpriseUserByEnterpriseUserKey(enterpriseUserKey);
@@ -43,21 +43,21 @@ public class ActivateUserServiceImpl implements ActivateUserService {
 					if (superuserEnterpriseKey == enterpriseKey) {
 						try {
 							activateUserDao.updateUserAuth(param);
-							result.put("result_code", 200);
+							result.put("resultCode", 200);
 						} catch (Exception e) {
-							result.put("result_code", 500);
+							result.put("resultCode", 500);
 						}
 					} else {
-						result.put("result_code", 400);
+						result.put("resultCode", 400);
 					}
 				} else {
-					result.put("result_code", 404);
+					result.put("resultCode", 404);
 				}
 			} else {
-				result.put("result_code", 401);
+				result.put("resultCode", 401);
 			}
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
 
 		Gson gson = new Gson();

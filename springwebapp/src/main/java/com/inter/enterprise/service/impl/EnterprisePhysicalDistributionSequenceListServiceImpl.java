@@ -40,12 +40,12 @@ public class EnterprisePhysicalDistributionSequenceListServiceImpl implements En
 				List<Map<String, Object>> physicalDistributionSequenceList = enterprisePhysicalDistributionSequenceListDao.queryPhysicalDistributionSequenceList(param);
 				
 				result.put("data", physicalDistributionSequenceList);
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} else {
-				result.put("result_code", 401);
+				result.put("resultCode", 401);
 			}
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
 		
 		Gson gson = new Gson();

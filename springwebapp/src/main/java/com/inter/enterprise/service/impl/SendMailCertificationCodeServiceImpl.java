@@ -35,7 +35,7 @@ public class SendMailCertificationCodeServiceImpl implements SendMailCertificati
 		if (count == 0) {
 			String certificationCode = MakeCertificationCodeUtil.makeCertificationCode();
 			String time = GetTimeUtil.getTime();
-			param.put("certification_code", certificationCode);
+			param.put("certificationCode", certificationCode);
 			param.put("time", time);
 
 			try {

@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Version Check -->
 	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
 		/* getVersionCheckCount */
-		SELECT current_version_code, current_version_name, is_forced_update, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') UPDATE_DTTM 
+		SELECT current_version_code AS currentVersionCode, current_version_name AS currentVersionName, is_forced_update AS isForceUpdate, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s')  AS updateDttm 
 		FROM app_enterprise_version 
 		WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_enterprise_version WHERE os_type = #{osType})
 	</select>
@@ -26,8 +26,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO app_enterprise
         (enterprise_key, name, registration_number, corporate_body_name, mobile_phone_number, address, website, mail, phone_number, type, reg_time)
         VALUES
-        (null, #{name}, #{registration_number}, #{corporate_body_name}, #{mobile_phone_number}, #{address}, #{website}, #{mail}, #{phone_number}, #{type}, #{time})
-        <selectKey resultType="int" keyProperty="enterprise_key" order="AFTER">
+        (null, #{name}, #{registrationNumber}, #{corporateBodyName}, #{mobilePhoneNumber}, #{address}, #{website}, #{mail}, #{phoneNumber}, #{type}, #{time})
+        <selectKey resultType="int" keyProperty="enterpriseKey" order="AFTER">
         	SELECT LAST_INSERT_ID()
         </selectKey>
 	</insert>
@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO app_enterprise_user 
 		(enterprise_user_key, enterprise_key, id, password, name, auth, reg_time) 
 		VALUES 
-		(null, #{enterprise_key}, #{ID}, #{password}, #{corporate_body_name}, 'AU00', #{time})
+		(null, #{enterpriseKey}, #{id}, #{password}, #{corporateBodyName}, 'AU00', #{time})
 	</insert>
 	
 	<!-- Create User -->
@@ -51,7 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO app_enterprise_user 
 		(enterprise_user_key, enterprise_key, id, password, name, auth, reg_time) 
 		VALUES 
-		(null, #{enterpriseKey}, #{ID}, #{password}, #{name}, 'AU02', #{time})
+		(null, #{enterpriseKey}, #{id}, #{password}, #{name}, 'AU02', #{time})
 	</insert>
 	
 	<!-- Login -->
@@ -60,18 +60,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT app_enterprise_user.id, app_enterprise_user.name, app_enterprise_user.auth, app_enterprise_user.password, app_enterprise.type 
 		FROM app_enterprise_user LEFT JOIN app_enterprise 
 		ON app_enterprise_user.enterprise_key = app_enterprise.enterprise_key 
-		WHERE app_enterprise_user.id = #{ID}
+		WHERE app_enterprise_user.id = #{id}
 	</select>
 	
 	<update id="updateToken" parameterType="map">
 		/* updateToken */
-		UPDATE app_enterprise_user SET token = #{token} WHERE id = #{ID}
+		UPDATE app_enterprise_user SET token = #{token} WHERE id = #{id}
 	</update>
 	
 	<!-- User List -->
 	<select id="queryUserList" parameterType="int" resultType="hashmap">
 		/* queryUserList */
-		SELECT enterprise_user_key, id, name, auth 
+		SELECT enterprise_user_key AS enterpriseUserKey, id, name, auth 
 		FROM app_enterprise_user 
 		WHERE enterprise_key = #{enterpriseKey} AND auth IN ('AU02', 'AU03') ORDER BY auth ASC, name ASC
 	</select>
@@ -84,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<update id="updateUserInfo" parameterType="map">
 		/* updateUserInfo */
-		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE enterprise_user_key = #{enterprise_user_key}
+		UPDATE app_enterprise_user SET password = #{password}, name = #{name} WHERE enterprise_user_key = #{enterpriseUserKey}
 	</update>
 	
 	<!-- Modify My Info -->
@@ -96,13 +96,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Activate User -->
 	<update id="updateUserAuth" parameterType="map">
 		/* updateUserAuth */
-		UPDATE app_enterprise_user SET auth = 'AU02' WHERE enterprise_user_key = #{enterprise_user_key}
+		UPDATE app_enterprise_user SET auth = 'AU02' WHERE enterprise_user_key = #{enterpriseUserKey}
 	</update>
 	
 	<!-- Deactivate User -->
 	<update id="updateUserAuthDeactivate" parameterType="map">
 		/* updateUserAuthDeactivate */
-		UPDATE app_enterprise_user SET auth = 'AU03' WHERE enterprise_user_key = #{enterprise_user_key}
+		UPDATE app_enterprise_user SET auth = 'AU03' WHERE enterprise_user_key = #{enterpriseUserKey}
 	</update>
 	
 	<!-- Request Sticker -->
@@ -122,9 +122,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertMailCertificationCode" parameterType="map">
 		/* insertMailCertificationCode */
-		INSERT INTO mail_certification_code (mail, certification_code, time) VALUES (#{mail}, #{certification_code}, #{time})
+		INSERT INTO mail_certification_code (mail, certification_code, time) VALUES (#{mail}, #{certificationCode}, #{time})
         ON DUPLICATE KEY
-        UPDATE certification_code = #{certification_code}, time = #{time}, mail = #{mail}
+        UPDATE certification_code = #{certificationCode}, time = #{time}, mail = #{mail}
 	</insert>
 	
 	<!-- Confirm Mail Certification Code -->
@@ -143,8 +143,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		/* queryAppPhysicalDistributionType */
 		SELECT app_physical_distribution.type
         FROM app_physical_distribution
-        WHERE time = (SELECT MAX(time) FROM app_physical_distribution WHERE SEQUENCE = #{SEQUENCE})
-        AND SEQUENCE = #{SEQUENCE}
+        WHERE time = (SELECT MAX(time) FROM app_physical_distribution WHERE SEQUENCE = #{sequence})
+        AND SEQUENCE = #{sequence}
 	</select>
 	
 	<insert id="insertAppPhysicalDistribution" parameterType="map">
@@ -152,7 +152,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO app_physical_distribution 
 		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key, province, city, district, full_address) 
 		VALUES 
-		(null, #{SEQUENCE}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterpriseUserKey}, #{province}, #{city}, #{district}, #{fullAddress})
+		(null, #{sequence}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterpriseUserKey}, #{province}, #{city}, #{district}, #{fullAddress})
 	</insert>
 	
 	<!-- Enterprise Physical Distribution Watermark Key -->
@@ -176,14 +176,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM app_physical_distribution
         LEFT JOIN app_enterprise_user
         ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
-        WHERE app_physical_distribution.SEQUENCE = #{SEQUENCE}
+        WHERE app_physical_distribution.SEQUENCE = #{sequence}
         ORDER BY app_physical_distribution.time DESC
 	</select>
 	
 	<!-- Enterprise Physical Distribution Sequence List -->
 	<select id="queryPhysicalDistributionSequenceList" parameterType="map" resultType="hashmap">
 		/* queryPhysicalDistributionSequenceList */
-		SELECT re_seq.SEQUENCE, re_seq.SKU_CODE
+		SELECT re_seq.SEQUENCE AS sequence, re_seq.SKU_CODE AS skuCode
 		FROM app_physical_distribution
 	    LEFT JOIN re_seq
         ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
@@ -201,20 +201,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="auth == 'AU02'">
 			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
         </if>
-	    AND lian_user_info.BIZ_ID = #{BIZ_ID}
-	    AND lian_order_info.SVC_NM = #{SVC_NM}
+	    AND lian_user_info.BIZ_ID = #{bizId}
+	    AND lian_order_info.SVC_NM = #{svcNm}
 	    <if test="SEQUENCE != ''">
-	    	AND re_seq.SEQUENCE &lt; #{SEQUENCE}
+	    	AND re_seq.SEQUENCE &lt; #{sequence}
 	    </if>
 		GROUP BY re_seq.SEQUENCE
 		ORDER BY re_seq.SEQUENCE DESC
 		LIMIT 20
 	</select>
 	
-	<!-- Enterprise Physical Distribution Sequence List -->
+	<!-- Enterprise Physical Distribution Product List -->
 	<select id="queryPhysicalDistributionProductList" parameterType="map" resultType="hashmap">
 		/* queryPhysicalDistributionProductList */
-		SELECT lian_order_info.SVC_NM
+		SELECT lian_order_info.SVC_NM AS svcNm
 		FROM app_physical_distribution
 	    LEFT JOIN re_seq
         ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
@@ -232,9 +232,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="auth == 'AU02'">
         	WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
         </if>
-	    AND lian_user_info.BIZ_ID = #{BIZ_ID}
+	    AND lian_user_info.BIZ_ID = #{bizId}
 	    <if test="SVC_NM != ''">
-	    	AND lian_order_info.SVC_NM &gt; #{SVC_NM}
+	    	AND lian_order_info.SVC_NM &gt; #{svcNm}
 	    </if>
 		GROUP BY lian_order_info.SVC_NM
 		ORDER BY lian_order_info.SVC_NM ASC
@@ -245,7 +245,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Enterprise Physical Distribution Enterprise List -->
 	<select id="queryPhysicalDistributionEnterpriseList" parameterType="map" resultType="hashmap">
 		/* queryPhysicalDistributionEnterpriseList */
-		SELECT lian_biz_info.BIZ_ID, lian_biz_info.BIZ_NAME
+		SELECT lian_biz_info.BIZ_ID AS bizId, lian_biz_info.BIZ_NAME AS bizName
 		FROM app_physical_distribution
 	    LEFT JOIN re_seq
         ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
@@ -261,10 +261,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
         </if>
 		<if test="auth == 'AU02'">
-			WHERE app_physical_distribution.enterprise_user_key = #{enterprise_user_key}
+			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
 		</if>
 		<if test="BIZ_NAME != ''">
-			AND lian_biz_info.BIZ_NAME &gt; #{BIZ_NAME}
+			AND lian_biz_info.BIZ_NAME &gt; #{bizName}
 		</if>
 		GROUP BY lian_biz_info.BIZ_ID
 		ORDER BY lian_biz_info.BIZ_NAME ASC

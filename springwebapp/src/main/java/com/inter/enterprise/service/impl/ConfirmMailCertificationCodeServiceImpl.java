@@ -28,15 +28,15 @@ public class ConfirmMailCertificationCodeServiceImpl implements ConfirmMailCerti
 		
 		if (certificationCode != null) {
 			
-			String certificationCodeParam = param.get("certification_code");
+			String certificationCodeParam = param.get("certificationCode");
 			String certificationCodeDB = certificationCode.get("certification_code");
 			if (certificationCodeParam.equals(certificationCodeDB)) {
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} else {
-				result.put("result_code", 400);
+				result.put("resultCode", 400);
 			}
 		} else {
-			result.put("result_code", 404);
+			result.put("resultCode", 404);
 		}
 		
 		Gson gson = new Gson();

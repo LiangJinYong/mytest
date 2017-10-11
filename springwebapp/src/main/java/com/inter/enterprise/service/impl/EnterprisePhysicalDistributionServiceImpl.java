@@ -22,63 +22,64 @@ public class EnterprisePhysicalDistributionServiceImpl implements EnterprisePhys
 	}
 
 	public String physicalDistribution(Map<String, String> param) {
-		
+
 		Map<String, Object> result = new HashMap<String, Object>();
-		
+
 		Map<String, Object> appEnterpriseUser = enterprisePhysicalDistributionDao.queryAppEnterpriseUserByToken(param);
-		
+
 		Gson gson = new Gson();
-		
+
 		if (appEnterpriseUser != null) {
 			int enterpriseUserKey = (Integer) appEnterpriseUser.get("enterprise_user_key");
 			param.put("enterpriseUserKey", String.valueOf(enterpriseUserKey));
-			
+
 			String auth = (String) appEnterpriseUser.get("auth");
-			
+
 			if ("AU01".equals(auth) || "AU02".equals(auth)) {
-				String sequence = param.get("SEQUENCE");
-				
+				String sequence = param.get("sequence");
+
 				Map<String, String> sequenceMap = enterprisePhysicalDistributionDao.querySequence(sequence);
+
+				String typeParam = param.get("type");
 				
 				if (sequenceMap != null) {
 					Map<String, String> appPhysicalDistributionTypeMap = enterprisePhysicalDistributionDao.queryAppPhysicalDistributionType(sequence);
-					
+
 					if (appPhysicalDistributionTypeMap != null) {
 						String typeDb = appPhysicalDistributionTypeMap.get("type");
-						String typeParam = param.get("type");
-						
+
 						if (typeDb.equals(typeParam)) {
-							result.put("result_code", 409);
+							result.put("resultCode", 409);
 							return gson.toJson(result);
 						}
-						
-						if ("WH".equals(typeParam) || "RL".equals(typeParam) || "SL".equals(typeParam) || "TB".equals(typeParam)) {
-						
-							String time = GetTimeUtil.getTime();
-							param.put("time", time);
-							
-							try {
-								enterprisePhysicalDistributionDao.insertAppPhysicalDistribution(param);
-								result.put("result_code", 200);
-							} catch (Exception e) {
-								result.put("result_code", 500);
-							}
-						} else {
-							result.put("result_code", 400);
-						}
 					}
+
+					if ("WH".equals(typeParam) || "RL".equals(typeParam) || "SL".equals(typeParam) || "TB".equals(typeParam)) {
+
+						String time = GetTimeUtil.getTime();
+						param.put("time", time);
+
+						try {
+							enterprisePhysicalDistributionDao.insertAppPhysicalDistribution(param);
+							result.put("resultCode", 200);
+						} catch (Exception e) {
+							result.put("resultCode", 500);
+						}
+					} else {
+						result.put("resultCode", 400);
+					}
+
 				} else {
-					result.put("result_code", 404);
+					result.put("resultCode", 404);
 				}
 			} else {
-				result.put("result_code", 401);
+				result.put("resultCode", 401);
 			}
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
-		
+
 		return gson.toJson(result);
 	}
-	
-	
+
 }

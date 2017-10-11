@@ -36,12 +36,12 @@ public class UserListServiceImpl implements UserListService {
 				List<Map<String, Object>> userList = userListDao.queryUserList(enterpriseKey);
 				
 				result.put("data", userList);
-				result.put("result_code", 200);
+				result.put("resultCode", 200);
 			} else {
-				result.put("result_code", 401);
+				result.put("resultCode", 401);
 			}
 		} else {
-			result.put("result_code", 403);
+			result.put("resultCode", 403);
 		}
 		
 		Gson gson = new Gson();

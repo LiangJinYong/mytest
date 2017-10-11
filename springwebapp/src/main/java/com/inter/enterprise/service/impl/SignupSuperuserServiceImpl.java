@@ -33,9 +33,9 @@ public class SignupSuperuserServiceImpl implements SignupSuperuserService {
 			
 			signupSuperuserDao.insertAppEnterpriseUser(param);
 			
-			result.put("result_code", 200);
+			result.put("resultCode", 200);
 		}catch (Exception e) {
-			result.put("result_code", 500);
+			result.put("resultCode", 500);
 		}
 		
 		Gson gson = new Gson();
