@@ -172,10 +172,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Enterprise Physical Distribution List -->
 	<select id="queryPhysicalDistributionList" parameterType="map" resultType="hashmap">
 		/* queryPhysicalDistributionList */
-		SELECT app_physical_distribution.latitude, app_physical_distribution.longitude, app_physical_distribution.time, app_enterprise_user.name, app_physical_distribution.type
+		SELECT app_physical_distribution.latitude, app_physical_distribution.longitude, app_enterprise.name AS enterpriseName, app_physical_distribution.time, app_enterprise_user.name AS enterpriseUserName, app_physical_distribution.type AS productDistributionType, province, city, district, full_address AS fullAddress
         FROM app_physical_distribution
-        LEFT JOIN app_enterprise_user
-        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
+        LEFT JOIN app_enterprise_user ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
+        LEFT JOIN app_enterprise ON app_enterprise_user.enterprise_key = app_enterprise.enterprise_key
         WHERE app_physical_distribution.SEQUENCE = #{sequence}
         ORDER BY app_physical_distribution.time DESC
 	</select>
@@ -203,7 +203,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
 	    AND lian_user_info.BIZ_ID = #{bizId}
 	    AND lian_order_info.SVC_NM = #{svcNm}
-	    <if test="SEQUENCE != ''">
+	    <if test="sequence != ''">
 	    	AND re_seq.SEQUENCE &lt; #{sequence}
 	    </if>
 		GROUP BY re_seq.SEQUENCE
@@ -233,7 +233,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         	WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
         </if>
 	    AND lian_user_info.BIZ_ID = #{bizId}
-	    <if test="SVC_NM != ''">
+	    <if test="svcNm != ''">
 	    	AND lian_order_info.SVC_NM &gt; #{svcNm}
 	    </if>
 		GROUP BY lian_order_info.SVC_NM
@@ -263,7 +263,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="auth == 'AU02'">
 			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
 		</if>
-		<if test="BIZ_NAME != ''">
+		<if test="bizName != ''">
 			AND lian_biz_info.BIZ_NAME &gt; #{bizName}
 		</if>
 		GROUP BY lian_biz_info.BIZ_ID

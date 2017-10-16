@@ -36,7 +36,7 @@ public class SendMailFmsServiceImpl implements SendMailFmsService {
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		Gson gson = new Gson();
-		mailJson = "{\"mail\":\"liangjy881@naver.com\",\"type\":\"approve\",\"message\":{\"biz_name\":\"杭州联数信息科技有限公司\",\"corp_name\":\"缪志荣\",\"corp_phone_num\":\"13810180818\",\"corp_mail\":\"2320606974@qq.com\",\"corp_addr\":\"杭州市萧山区北干街道萧山商会大厦A座16楼\",\"corp_homepage\":\"www.lianshukj.com\",\"join_dt\":\"2017-09-10\",\"approve_dt\":\"2017-09-25\",\"approve_id\":\"test / Rui\"}}";
+		
 		Map<String, Object> mailObj = gson.fromJson(mailJson, Map.class);
 		String type = (String) mailObj.get("type");
 		String mail = (String) mailObj.get("mail");
@@ -47,7 +47,7 @@ public class SendMailFmsServiceImpl implements SendMailFmsService {
 
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("mail", mail);
-		param.put("certification_code", certificationCode);
+		param.put("certificationCode", certificationCode);
 		param.put("time", time);
 
 		String subject = "";
