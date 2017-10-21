@@ -109,18 +109,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ORDER BY pd.time DESC
 	</select>
 
-	<!-- ReWrite -->
-	<select id="queryHomepageAddr" parameterType="string" resultType="string">
-		/* queryHomepageAddr */
-		SELECT lian_biz_info.HOMEPAGE_ADDR FROM re_seq
-		LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER =
-		lian_order_info.ORDER_SEQ
-		LEFT JOIN lian_user_info ON lian_order_info.USER_ID = lian_user_info.USER_ID
-		LEFT JOIN lian_biz_info ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
-		WHERE WATERMARK_KEY =
-		#{watermarkKey}
-	</select>
-
 	<!-- App Log -->
 	<select id="getOrderNumberBySequence" parameterType="string" resultType="int">
 		/* getOrderNumberBySequence */
