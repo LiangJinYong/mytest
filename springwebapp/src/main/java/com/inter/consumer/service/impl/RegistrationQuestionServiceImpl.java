@@ -33,7 +33,6 @@ public class RegistrationQuestionServiceImpl implements RegistrationQuestionServ
 			String time = GetTimeUtil.getTime();
 			
 			param.put("time", time);
-			param.put("userKey", String.valueOf(appUserNo));
 			
 			try {
 				registrationQuestionDao.insertAppQuestion(param);

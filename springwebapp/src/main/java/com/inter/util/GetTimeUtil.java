@@ -23,4 +23,13 @@ public class GetTimeUtil {
 		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		return df.format(curDate);
 	}
+	
+	public static String getSpecifiedTimeUnit(String pattern) {
+
+		DateFormat df = new SimpleDateFormat(pattern);
+		Date curDate = new Date();
+
+		df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+		return df.format(curDate);
+	}
 }

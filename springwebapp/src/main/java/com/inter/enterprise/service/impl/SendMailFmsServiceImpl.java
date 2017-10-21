@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class SendMailFmsServiceImpl implements SendMailFmsService {
 	private SendMailFmsDao sendMailFmsDao;
 
 	@Autowired
+	@Qualifier("mailSenderFMS")
 	private MailSender mailSender;
 
 	public void setSendMailFmsDao(SendMailFmsDao sendMailFmsDao) {
@@ -128,7 +130,7 @@ public class SendMailFmsServiceImpl implements SendMailFmsService {
 			sendMailFmsDao.insertMailCertificationCode(param);
 			SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
-			simpleMailMessage.setFrom("lianshu@lianshukj.com");
+			simpleMailMessage.setFrom("lianshukj.fms@lianshukj.com");
 			simpleMailMessage.setTo(mail);
 			simpleMailMessage.setSubject(subject);
 			simpleMailMessage.setText(body.toString());

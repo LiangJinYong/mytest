@@ -1,26 +1,69 @@
 package com.inter.consumer.dao.impl;
 
+import java.util.Map;
+
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.inter.consumer.dao.VerificationHistoryDao;
-import com.mongodb.DBCollection;
 
 @Repository
 public class VerificationHistoryDaoImpl implements VerificationHistoryDao {
 
+	private static final String NAMESPACE = "com.inter.consumer.";
+	
 	@Autowired
-	private MongoTemplate mongoTemplate;
-
-	public void setMongoTemplate(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
+	@Qualifier("orderSqlSession")
+	private SqlSessionTemplate orderSqlSessionTemplate;
+	
+	@Autowired
+	@Qualifier("authSqlSession")
+	private SqlSessionTemplate authSqlSessionTemplate;
+	
+	@Autowired
+	@Qualifier("logSqlSession")
+	private SqlSessionTemplate logSqlSessionTemplate;
+	
+	public void setOrderSqlSessionTemplate(SqlSessionTemplate orderSqlSessionTemplate) {
+		this.orderSqlSessionTemplate = orderSqlSessionTemplate;
 	}
 
-	public void verificationHistory(String logJson) {
-		DBCollection logCollection = mongoTemplate.getCollection("log");
+	public void setAuthSqlSessionTemplate(SqlSessionTemplate authSqlSessionTemplate) {
+		this.authSqlSessionTemplate = authSqlSessionTemplate;
+	}
 
-		mongoTemplate.insert(logJson, "log");
+	public void setLogSqlSessionTemplate(SqlSessionTemplate logSqlSessionTemplate) {
+		this.logSqlSessionTemplate = logSqlSessionTemplate;
+	}
+
+	public Integer getOrderNumberBySequence(String sequence) {
+		return authSqlSessionTemplate.selectOne(NAMESPACE + "getOrderNumberBySequence", sequence);
+	}
+	
+	public Integer getUserNoByPhoneNumber(String mobilePhoneNumber) {
+		return orderSqlSessionTemplate.selectOne(NAMESPACE + "getUserNoByPhoneNumber", mobilePhoneNumber);
+	}
+
+	public void insertFailLog(Map<String, String> param) {
+		logSqlSessionTemplate.insert(NAMESPACE + "insertFailLog", param);
+	}
+
+	public void insertSuccessLog(Map<String, String> param) {
+		logSqlSessionTemplate.insert(NAMESPACE + "insertSuccessLog", param);
+	}
+	
+	public Map<String, Object> getExtendedDetailInfoBySequence(String sequence) {
+		return orderSqlSessionTemplate.selectOne(NAMESPACE + "getExtendedDetailInfoBySequence", sequence);
+	}
+
+	public void updateExtendedDetailInfo(Map<String, String> param) {
+		orderSqlSessionTemplate.update(NAMESPACE + "updateExtendedDetailInfo", param);
+	}
+
+	public void insertExtendedDetailInfo(Map<String, String> param) {
+		orderSqlSessionTemplate.insert(NAMESPACE + "insertExtendedDetailInfo", param);
 	}
 
 }

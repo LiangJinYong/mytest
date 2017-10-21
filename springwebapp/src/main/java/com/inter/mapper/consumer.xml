@@ -6,98 +6,161 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.inter.consumer">
 
 	<!-- Version Check -->
-	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
+	<select id="getVersionCheckByOSType" parameterType="string" resultType="hashmap">
 		/* getVersionCheckCount */
 		SELECT current_version_code AS currentVersionCode, current_version_name AS currentVersionName, is_forced_update AS isForceUpdate, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') AS updateDttm FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
 	</select>
-	
+
 	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
 		/* getVersionCheckCountByVersionCode */
 		SELECT count(*) FROM app_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
 	</select>
-	
+
 	<!-- Publish Token -->
 	<select id="queryAppUserCountByPhoneNumber" parameterType="string" resultType="int">
 		/* queryAppUserCountByPhoneNumber */
 		SELECT count(*) FROM app_user WHERE mobile_phone_number = #{mobilePhoneNumber}
 	</select>
-	
+
 	<update id="updateAppUser" parameterType="map">
 		/* updateAppUser */
 		UPDATE app_user SET os_type = #{osType}, os_version = #{osVersion}, device = #{device}, token = #{token}, manufacture = #{manufacture}, regdate = #{time} WHERE mobile_phone_number = #{mobilePhoneNumber}
 	</update>
-	
+
 	<insert id="insertAppUser" parameterType="map">
 		/* insertAppUser */
 		INSERT INTO app_user (user_key, mobile_phone_number, os_type, os_version, device, token, manufacture, regdate) VALUES (null, #{mobilePhoneNumber}, #{osType}, #{osVersion}, #{device}, #{token}, #{manufacture}, #{time})
 	</insert>
-	
+
 	<!-- Register Question -->
 	<select id="queryAppUserNoByToken" parameterType="string" resultType="int">
 		/* queryAppUserNoByToken */
 		SELECT app_user.user_key FROM app_user WHERE token = #{token}
 	</select>
-	
+
 	<insert id="insertAppQuestion" parameterType="map">
 		/* insertAppQuestion */
 		INSERT INTO app_question (question_key, content, registration_time, token) VALUES (null, #{content}, #{time}, #{token})
 	</insert>
-	
+
 	<!-- Get Question List -->
 	<select id="queryAppUserCount" parameterType="string" resultType="int">
 		/* queryAppUserCount */
 		SELECT count(*) FROM app_user WHERE token = #{token}
 	</select>
-	
+
 	<select id="queryQuestionAnswerList" parameterType="string" resultType="hashmap">
 		/* queryQuestionAnswerList */
-		SELECT q.question_key AS question_key, q.content AS content, date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time, a.question_key AS a_question_key
+		SELECT q.question_key AS question_key, q.content AS content,
+		date_format(q.registration_time, '%Y-%m-%d %H:%i:%s') AS registration_time, a.answer_key, a.content AS a_content, date_format(a.registration_time, '%Y-%m-%d %H:%i:%s') AS a_registration_time,
+		a.question_key AS a_question_key
 		FROM app_question q LEFT JOIN app_answer a ON q.question_key = a.question_key
 		WHERE token = #{token}
 		ORDER BY question_key ASC, registration_time DESC
 	</select>
-	
+
 	<!-- Detail Info -->
-	<select id="getDetailInfo" parameterType="string" resultType="hashmap">
-	SELECT lian_order_info.*, lian_user_info.USER_NAME, lian_biz_info.BIZ_NAME, lian_biz_info.HOMEPAGE_ADDR, lian_biz_info.CORP_EMAIL, lian_biz_info.CORP_PHONE, re_seq.SKU_CODE as SKU_CODE_SEQUENCE FROM re_seq
-    LEFT JOIN lian_order_info
-    ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ
-    LEFT JOIN lian_user_info
-    ON lian_order_info.USER_ID = lian_user_info.USER_ID
-    LEFT JOIN lian_biz_info
-    ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
-    WHERE re_seq.SEQUENCE = #{sequence}
+	<select id="getOrderInfoBySequence" parameterType="string" resultType="hashmap">
+		/* 	getOrderInfoBySequence */
+		SELECT ORDER_NUMBER orderNumber, SKU_CODE skuCode FROM app_seq WHERE SEQUENCE = #{sequence}
 	</select>
 	
+	<select id="getDetailInfo" parameterType="string" resultType="hashmap">
+		/* getDetailInfo */
+		SELECT lian_order_info.*, lian_user_info.USER_NAME, lian_biz_info.BIZ_NAME, lian_biz_info.HOMEPAGE_ADDR,
+		lian_biz_info.CORP_EMAIL, lian_biz_info.CORP_PHONE
+		FROM lian_order_info LEFT JOIN lian_user_info
+		ON lian_order_info.USER_ID = lian_user_info.USER_ID
+		LEFT JOIN lian_biz_info
+		ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
+		WHERE lian_order_info.order_seq = #{orderNumber}
+		AND lian_order_info.GENERATION = #{generation}
+		AND lian_order_info.STEP = #{step}
+	</select>
+
+	<select id="querySvcCdName" parameterType="string" resultType="hashmap">
+		/* querySvcCdName */
+		SELECT COMM_CD_VAL_NM FROM licom_comm_cd_dtl WHERE COMM_CD_VAL = #{svcCd}
+	</select>
+
 	<!-- Send Certification Code -->
 	<insert id="insertCertificationCode" parameterType="map">
 		/* insertCertificationCode */
-		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobilePhoneNumber}, #{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobilePhoneNumber}
+		INSERT INTO certification_code (method, certification_code, time) VALUES (#{mobilePhoneNumber},
+		#{certificationCode}, #{time}) ON DUPLICATE KEY UPDATE certification_code = #{certificationCode}, time = #{time}, method = #{mobilePhoneNumber}
 	</insert>
-	
+
 	<!-- Confirm Certification Code -->
 	<select id="queryCertificationCode" parameterType="string" resultType="string">
 		/* queryCertificationCode */
-		SELECT certification_code.certification_code FROM certification_code WHERE method = #{mobilePhoneNumber}
+		SELECT certification_code.certification_code FROM certification_code WHERE method =
+		#{mobilePhoneNumber}
 	</select>
-	
+
 	<!-- Physical Distribution List -->
 	<select id="queryPhysicalDistributionInfo" parameterType="string" resultType="hashmap">
 		/* queryPhysicalDistributionInfo */
-		SELECT eu.name AS enterpriseUserName, e.name AS enterpriseName, pd.latitude, pd.longitude, pd.time, pd.type AS productDistributionType, pd.full_address AS fullAddress
-		FROM app_physical_distribution pd LEFT JOIN app_enterprise_user eu ON eu.enterprise_user_key = pd.enterprise_user_key
+		SELECT eu.name AS enterpriseUserName, e.name AS enterpriseName, pd.latitude,
+		pd.longitude, pd.time, pd.type AS productDistributionType, pd.full_address AS fullAddress
+		FROM app_physical_distribution pd LEFT JOIN app_enterprise_user eu ON eu.enterprise_user_key =
+		pd.enterprise_user_key
 		LEFT JOIN app_enterprise e ON eu.enterprise_key = e.enterprise_key
 		WHERE pd.SEQUENCE = #{sequence}
 		ORDER BY pd.time DESC
 	</select>
-	
+
 	<!-- ReWrite -->
 	<select id="queryHomepageAddr" parameterType="string" resultType="string">
 		/* queryHomepageAddr */
 		SELECT lian_biz_info.HOMEPAGE_ADDR FROM re_seq
-		LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER = lian_order_info.ORDER_SEQ
+		LEFT JOIN lian_order_info ON re_seq.ORDERNUMBER =
+		lian_order_info.ORDER_SEQ
 		LEFT JOIN lian_user_info ON lian_order_info.USER_ID = lian_user_info.USER_ID
 		LEFT JOIN lian_biz_info ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
-		WHERE WATERMARK_KEY = #{watermarkKey}
+		WHERE WATERMARK_KEY =
+		#{watermarkKey}
 	</select>
+
+	<!-- App Log -->
+	<select id="getOrderNumberBySequence" parameterType="string" resultType="int">
+		/* getOrderNumberBySequence */
+		SELECT order_number FROM app_seq WHERE sequence = #{sequence}
+	</select>
+
+	<select id="getUserNoByPhoneNumber" parameterType="string" resultType="int">
+		/* getUserNoByPhoneNumber */
+		SELECT user_key FROM app_user WHERE mobile_phone_number = #{mobilePhoneNumber}
+	</select>
+
+	<insert id="insertFailLog" parameterType="map">
+		/* insertFailLog */
+		INSERT INTO app_log_fail 
+		(AT_DATE, RGST_YMD, RGST_YY, RGST_MM, RGST_DD, IS_QR, CUR_VERSION_CODE, MANUFACTURE, DEVICE, OS_TYPE, IS_TIMEOUT, USER_NO, PHONE_NUM, SEQUENCE, GENERATION, STEP, LONGITUDE, LATITUDE, ADDR_ALL, ADDR_PROVINCE, ADDR_CITY, ADDR_DISTRICT)
+		VALUES
+		(#{time}, #{ymd}, #{year}, #{month}, #{day}, #{isQR}, #{currentVersionCode}, #{manufacture}, #{device}, #{osType}, #{isTimeout}, #{userNo}, #{mobilePhoneNumber}, #{sequence}, #{generation}, #{step}, #{longitude}, #{latitude}, #{fullAddress}, #{province}, #{city}, #{district})
+	</insert>
+	
+	<insert id="insertSuccessLog" parameterType="map">
+		/* insertSuccessLog */
+		INSERT INTO app_log_suc 
+		(AT_DATE, RGST_YMD, RGST_YY, RGST_MM, RGST_DD, IS_QR, CUR_VERSION_CODE, MANUFACTURE, DEVICE, OS_TYPE, USER_NO, PHONE_NUM, ORDER_NUM, SEQUENCE, GENERATION, STEP, LONGITUDE, LATITUDE, ADDR_ALL, ADDR_PROVINCE, ADDR_CITY, ADDR_DISTRICT)
+		VALUES
+		(#{time}, #{ymd}, #{year}, #{month}, #{day}, #{isQR}, #{currentVersionCode}, #{manufacture}, #{device}, #{osType}, #{userNo}, #{mobilePhoneNumber}, #{orderNum}, #{sequence}, #{generation}, #{step}, #{longitude}, #{latitude}, #{fullAddress}, #{province}, #{city}, #{district})
+	</insert>
+	
+	<select id="getExtendedDetailInfoBySequence" parameterType="string" resultType="hashmap">
+		/* getExtendedDetailInfoBySequence */
+		SELECT sequence, detect_count detectCount, last_location lastAddress FROM app_extended_detail_info WHERE sequence = #{sequence}
+	</select>
+	
+	<update id="updateExtendedDetailInfo">
+		/* updateExtendedDetailInfo */
+		UPDATE app_extended_detail_info SET detect_count = detect_count + 1, last_location = current_location, current_location = #{fullAddress}  WHERE sequence = #{sequence}
+	</update>
+	
+	<insert id="insertExtendedDetailInfo">
+		/* insertExtendedDetailInfo */
+		INSERT INTO app_extended_detail_info (sequence, detect_count, current_location) VALUES (#{sequence}, 1, #{fullAddress})
+	</insert>
+	
 </mapper>
