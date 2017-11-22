@@ -6,21 +6,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.inter.enterprise">
 
 	<!-- Version Check -->
-	<select id="getVersionCheckByOSType"  parameterType="string" resultType="hashmap">
-		/* getVersionCheckCount */
-		SELECT current_version_code AS currentVersionCode, current_version_name AS currentVersionName, is_forced_update AS isForceUpdate, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s')  AS updateDttm 
-		FROM app_enterprise_version 
-		WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_enterprise_version WHERE os_type = #{osType})
-	</select>
-	
-	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
-		/* getVersionCheckCountByVersionCode */
-		SELECT count(*) 
-		FROM app_enterprise_version 
-		WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
+	<select id="getVersionCheckInfo" parameterType="map" resultType="hashmap">
+		/* getVersionCheckInfo */
+		SELECT MAX(a.current_version_code) as currentVersionCode, MAX(a.current_version_name) as currentVersionName, 
+			(SELECT IFNULL(SUM(b.is_forced_update), 0)
+	        FROM app_enterprise_version b
+	        WHERE b.os_type = #{osType}
+	        AND b.current_version_code > #{currentVersionCode}
+	       	) as isForceUpdate 
+		FROM app_enterprise_version a
+		WHERE a.os_type = #{osType}
 	</select>
 	
 	<!-- Signup Superuser -->
+	<select id="getCurrentMailCount" parameterType="string" resultType="int">
+		/* getCurrentMailCount */
+		SELECT COUNT(*) FROM app_enterprise WHERE mail = #{currentMail}
+	</select>
+	
+	<select id="getCurrentIdCount" parameterType="string" resultType="int">
+		/* getCurrentIdCount */
+		SELECT COUNT(*) FROM app_enterprise_user WHERE id = #{currentId}
+	</select>
+	
 	<insert id="insertAppEnterprise" parameterType="map">
 		/* insertAppEnterprise */
 		INSERT INTO app_enterprise
@@ -43,7 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- Create User -->
 	<select id="queryAppEnterpriseUserByToken" parameterType="map" resultType="hashmap">
 		/* queryAppEnterpriseUserByToken */
-		SELECT enterprise_user_key, enterprise_key, auth, password FROM app_enterprise_user WHERE token = #{token}
+		SELECT enterprise_user_key, enterprise_key, auth, password, name FROM app_enterprise_user WHERE token = #{token}
 	</select>
 	
 	<insert id="insertNormalAppEnterpriseUser" parameterType="map">
@@ -125,9 +133,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<!-- Enterprise Physical Distribution -->
-	<select id="querySequence" parameterType="string" resultType="hashmap">
-		/* querySequence */
-		SELECT re_seq.SEQUENCE FROM re_seq WHERE SEQUENCE = #{sequence}
+	<select id="queryOrderBySequence" parameterType="string" resultType="hashmap">
+		/* queryOrderBySequence */
+		SELECT ORDER_NUMBER orderNumber FROM app_seq WHERE SEQUENCE = #{sequence}
+	</select>
+	
+	<select id="queryBizServiceInfo" parameterType="int" resultType="hashmap">
+		/* queryBizServiceInfo */
+		SELECT loi.SVC_NM AS svcNm, lbi.BIZ_NAME AS bizNm
+		FROM lian_order_info loi LEFT JOIN lian_biz_info lbi
+		ON loi.BIZ_ID = lbi.BIZ_ID 
+		WHERE loi.ORDER_SEQ = #{orderNumber}
 	</select>
 	
 	<select id="queryAppPhysicalDistributionType" parameterType="string" resultType="hashmap">
@@ -141,9 +157,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insertAppPhysicalDistribution" parameterType="map">
 		/* insertAppPhysicalDistribution */
 		INSERT INTO app_physical_distribution 
-		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key, province, city, district, full_address) 
+		(physical_distribution_key, SEQUENCE, latitude, longitude, type, time, enterprise_user_key, province, city, district, full_address, biz_nm, svc_nm) 
 		VALUES 
-		(null, #{sequence}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterpriseUserKey}, #{province}, #{city}, #{district}, #{fullAddress})
+		(null, #{sequence}, #{latitude}, #{longitude}, #{type}, #{time}, #{enterpriseUserKey}, #{province}, #{city}, #{district}, #{fullAddress}, #{bizNm}, #{svcNm})
 	</insert>
 	
 	<!-- Enterprise Physical Distribution List -->
@@ -157,94 +173,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY app_physical_distribution.time DESC
 	</select>
 	
-	<!-- Enterprise Physical Distribution Sequence List -->
-	<select id="queryPhysicalDistributionSequenceList" parameterType="map" resultType="hashmap">
-		/* queryPhysicalDistributionSequenceList */
-		SELECT re_seq.SEQUENCE AS sequence, re_seq.SKU_CODE AS skuCode
+	<!-- Enterprise Physical Distribution EnterpriseList  -->
+	<select id="queryPhysicalDistributionHistoryList" parameterType="map" resultType="hashmap">
+		/* queryPhysicalDistributionHistoryList */
+		SELECT sequence, svc_nm AS svcNm, time, biz_nm AS bizNm, type
 		FROM app_physical_distribution
-	    LEFT JOIN re_seq
-        ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
-	    LEFT JOIN lian_order_info
-        ON lian_order_info.ORDER_SEQ = re_seq.ORDERNUMBER
-	    LEFT JOIN lian_user_info
-        ON lian_user_info.USER_ID = lian_order_info.USER_ID
-	    LEFT JOIN lian_biz_info
-        ON lian_biz_info.BIZ_ID = lian_user_info.BIZ_ID
-        <if test="auth == 'AU01'">
-		    LEFT JOIN app_enterprise_user
-	        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
-			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
-        </if>
-        <if test="auth == 'AU02'">
-			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
-        </if>
-	    AND lian_user_info.BIZ_ID = #{bizId}
-	    AND lian_order_info.SVC_NM = #{svcNm}
-	    <if test="sequence != ''">
-	    	AND re_seq.SEQUENCE &lt; #{sequence}
-	    </if>
-		GROUP BY re_seq.SEQUENCE
-		ORDER BY re_seq.SEQUENCE DESC
-		LIMIT 20
-	</select>
-	
-	<!-- Enterprise Physical Distribution Product List -->
-	<select id="queryPhysicalDistributionProductList" parameterType="map" resultType="hashmap">
-		/* queryPhysicalDistributionProductList */
-		SELECT lian_order_info.SVC_NM AS svcNm
-		FROM app_physical_distribution
-	    LEFT JOIN re_seq
-        ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
-	    LEFT JOIN lian_order_info
-        ON lian_order_info.ORDER_SEQ = re_seq.ORDERNUMBER
-	    LEFT JOIN lian_user_info
-        ON lian_user_info.USER_ID = lian_order_info.USER_ID
-	    LEFT JOIN lian_biz_info
-        ON lian_biz_info.BIZ_ID = lian_user_info.BIZ_ID
-        <if test="auth == 'AU01'">
-		    LEFT JOIN app_enterprise_user
-	        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
-			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
-        </if>
-        <if test="auth == 'AU02'">
-        	WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
-        </if>
-	    AND lian_user_info.BIZ_ID = #{bizId}
-	    <if test="svcNm != ''">
-	    	AND lian_order_info.SVC_NM &gt; #{svcNm}
-	    </if>
-		GROUP BY lian_order_info.SVC_NM
-		ORDER BY lian_order_info.SVC_NM ASC
-		LIMIT 20
-	</select>
-	
-	
-	<!-- Enterprise Physical Distribution Enterprise List -->
-	<select id="queryPhysicalDistributionEnterpriseList" parameterType="map" resultType="hashmap">
-		/* queryPhysicalDistributionEnterpriseList */
-		SELECT lian_biz_info.BIZ_ID AS bizId, lian_biz_info.BIZ_NAME AS bizName
-		FROM app_physical_distribution
-	    LEFT JOIN re_seq
-        ON app_physical_distribution.SEQUENCE = re_seq.SEQUENCE
-	    LEFT JOIN lian_order_info
-        ON lian_order_info.ORDER_SEQ = re_seq.ORDERNUMBER
-	    LEFT JOIN lian_user_info
-        ON lian_user_info.USER_ID = lian_order_info.USER_ID
-	    LEFT JOIN lian_biz_info
-        ON lian_biz_info.BIZ_ID = lian_user_info.BIZ_ID
-        <if test="auth == 'AU01'">
-		    LEFT JOIN app_enterprise_user
-	        ON app_enterprise_user.enterprise_user_key = app_physical_distribution.enterprise_user_key
-			WHERE app_enterprise_user.enterprise_key = #{enterpriseKey}
-        </if>
-		<if test="auth == 'AU02'">
-			WHERE app_physical_distribution.enterprise_user_key = #{enterpriseUserKey}
+		<if test="enterpriseUserKey == '-1'">
+		WHERE enterprise_user_key = #{currentEnterpriseUserKey}
 		</if>
-		<if test="bizName != ''">
-			AND lian_biz_info.BIZ_NAME &gt; #{bizName}
+		<if test="enterpriseUserKey != '-1'">
+		WHERE enterprise_user_key = #{enterpriseUserKey}
 		</if>
-		GROUP BY lian_biz_info.BIZ_ID
-		ORDER BY lian_biz_info.BIZ_NAME ASC
+		<if test="time != ''">
+		AND time &lt; #{time}
+		</if>
+		ORDER BY time DESC
 		LIMIT 20
 	</select>
+	
 </mapper>

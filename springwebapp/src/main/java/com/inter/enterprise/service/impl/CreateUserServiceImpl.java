@@ -23,9 +23,18 @@ public class CreateUserServiceImpl implements CreateUserService {
 
 	public String createUser(Map<String, String> param) {
 
-		Map<String, Object> appEnterpriseUser = createUserDao.queryAppEnterpriseUserByToken(param);
-
 		Map<String, Object> result = new HashMap<String, Object>();
+		Gson gson = new Gson();
+		
+		String currentId = param.get("id");
+		int currentIdCount = createUserDao.getCurrentIdCount(currentId);
+		
+		if (currentIdCount > 0) {
+			result.put("resultCode", 409);
+			return gson.toJson(result);
+		}
+		
+		Map<String, Object> appEnterpriseUser = createUserDao.queryAppEnterpriseUserByToken(param);
 
 		if (appEnterpriseUser != null) {
 
@@ -51,8 +60,7 @@ public class CreateUserServiceImpl implements CreateUserService {
 		} else {
 			result.put("resultCode", 403);
 		}
-
-		Gson gson = new Gson();
+		
 		return gson.toJson(result);
 	}
 

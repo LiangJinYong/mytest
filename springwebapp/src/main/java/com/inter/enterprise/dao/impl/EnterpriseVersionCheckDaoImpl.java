@@ -1,6 +1,5 @@
 package com.inter.enterprise.dao.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -22,14 +21,7 @@ public class EnterpriseVersionCheckDaoImpl implements EnterpriseVersionCheckDao 
 		this.sqlSessionTemplate = sqlSessionTemplate;
 	}
 
-	public Map<String, Object> getVersionCheckByOSType(String osType) {
-		return sqlSessionTemplate.selectOne(NAMESPACE + "getVersionCheckByOSType", osType);
-	}
-
-	public int getVersionCheckCountByVersionCode(int currentVersionCodeParam, int currentVersionCodeDB) {
-		Map<String, Integer> paramMap = new HashMap<String, Integer>();
-		paramMap.put("currentVersionCodeParam", currentVersionCodeParam);
-		paramMap.put("currentVersionCodeDB", currentVersionCodeDB);
-		return sqlSessionTemplate.selectOne(NAMESPACE + "getVersionCheckCountByVersionCode", paramMap);
+	public Map<String, Object> getVersionCheckInfo(Map<String, String> param) {
+		return sqlSessionTemplate.selectOne(NAMESPACE + "getVersionCheckInfo", param);
 	}
 }

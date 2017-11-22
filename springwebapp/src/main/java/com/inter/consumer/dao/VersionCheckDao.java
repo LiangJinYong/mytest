@@ -4,8 +4,6 @@ import java.util.Map;
 
 public interface VersionCheckDao {
 
-	Map<String, Object> getVersionCheckByOSType(String osType);
-
-	int getVersionCheckCountByVersionCode(int currentVersionCodeParam, int currentVersionCodeDB);
+	Map<String, Object> getVersionCheckInfo(Map<String, String> param);
 
 }

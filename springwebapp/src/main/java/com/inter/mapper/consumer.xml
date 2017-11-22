@@ -6,14 +6,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.inter.consumer">
 
 	<!-- Version Check -->
-	<select id="getVersionCheckByOSType" parameterType="string" resultType="hashmap">
-		/* getVersionCheckCount */
-		SELECT current_version_code AS currentVersionCode, current_version_name AS currentVersionName, is_forced_update AS isForceUpdate, date_format(UPDATE_DTTM, '%Y-%m-%d %H:%i:%s') AS updateDttm FROM app_version WHERE os_type = #{osType} AND version_key = (SELECT MAX(version_key) FROM app_version WHERE os_type = #{osType})
-	</select>
-
-	<select id="getVersionCheckCountByVersionCode" parameterType="map" resultType="int">
-		/* getVersionCheckCountByVersionCode */
-		SELECT count(*) FROM app_version WHERE is_forced_update = 1 AND current_version_code &gt; #{currentVersionCodeParam} AND current_version_code &lt;= #{currentVersionCodeDB}
+	<select id="getVersionCheckInfo" parameterType="map" resultType="hashmap">
+		/* getVersionCheckInfo */
+		SELECT MAX(a.current_version_code) as currentVersionCode, MAX(a.current_version_name) as currentVersionName, 
+			(SELECT IFNULL(SUM(b.is_forced_update), 0)
+	        FROM app_version b
+	        WHERE b.os_type = #{osType}
+	        AND b.current_version_code > #{currentVersionCode}
+	       	) as isForceUpdate 
+		FROM app_version a
+		WHERE a.os_type = #{osType}
 	</select>
 
 	<!-- Publish Token -->
@@ -74,13 +76,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		LEFT JOIN lian_biz_info
 		ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
 		WHERE lian_order_info.order_seq = #{orderNumber}
-		AND lian_order_info.GENERATION = #{generation}
-		AND lian_order_info.STEP = #{step}
 	</select>
 
 	<select id="querySvcCdName" parameterType="string" resultType="hashmap">
 		/* querySvcCdName */
 		SELECT COMM_CD_VAL_NM FROM licom_comm_cd_dtl WHERE COMM_CD_VAL = #{svcCd}
+	</select>
+	
+	<select id="getExtendedDetailInfoBySequence" parameterType="string" resultType="hashmap">
+		/* getExtendedDetailInfoBySequence */
+		SELECT sequence, detect_count detectCount, last_location lastAddress, date_format(last_detect_time, '%Y-%m-%d %H:%i:%s') AS lastDetectTime FROM app_extended_detail_info WHERE sequence = #{sequence}
 	</select>
 
 	<!-- Send Certification Code -->
@@ -136,19 +141,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		(#{time}, #{ymd}, #{year}, #{month}, #{day}, #{isQR}, #{currentVersionCode}, #{manufacture}, #{device}, #{osType}, #{userNo}, #{mobilePhoneNumber}, #{orderNum}, #{sequence}, #{generation}, #{step}, #{longitude}, #{latitude}, #{fullAddress}, #{province}, #{city}, #{district})
 	</insert>
 	
-	<select id="getExtendedDetailInfoBySequence" parameterType="string" resultType="hashmap">
-		/* getExtendedDetailInfoBySequence */
-		SELECT sequence, detect_count detectCount, last_location lastAddress FROM app_extended_detail_info WHERE sequence = #{sequence}
-	</select>
-	
-	<update id="updateExtendedDetailInfo">
-		/* updateExtendedDetailInfo */
-		UPDATE app_extended_detail_info SET detect_count = detect_count + 1, last_location = current_location, current_location = #{fullAddress}  WHERE sequence = #{sequence}
-	</update>
-	
 	<insert id="insertExtendedDetailInfo">
 		/* insertExtendedDetailInfo */
-		INSERT INTO app_extended_detail_info (sequence, detect_count, current_location) VALUES (#{sequence}, 1, #{fullAddress})
+		INSERT INTO app_extended_detail_info (sequence, detect_count , current_location , last_location, current_detect_time, last_detect_time) VALUES (#{sequence}, 1, #{fullAddress}, null, #{time}, null) ON DUPLICATE KEY UPDATE detect_count = detect_count +1, last_location = current_location, current_location = #{fullAddress}, last_detect_time = current_detect_time, current_detect_time = #{time} 
 	</insert>
+	
+	<!-- ReWrite -->
+	<select id="queryHomepageAddr" parameterType="int" resultType="string">
+		/* queryHomepageAddr */
+		SELECT lian_biz_info.HOMEPAGE_ADDR 
+		FROM lian_order_info 
+		LEFT JOIN lian_user_info ON lian_order_info.USER_ID = lian_user_info.USER_ID
+		LEFT JOIN lian_biz_info ON lian_user_info.BIZ_ID = lian_biz_info.BIZ_ID
+		WHERE lian_order_info.order_seq = #{orderNumber}
+	</select>
 	
 </mapper>

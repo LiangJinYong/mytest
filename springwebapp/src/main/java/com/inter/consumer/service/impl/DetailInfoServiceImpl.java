@@ -30,6 +30,7 @@ public class DetailInfoServiceImpl implements DetailInfoService {
 	public String detailInfo(Map<String, String> param) {
 
 		Map<String, Object> result = new HashMap<String, Object>();
+		Gson gson = new Gson();
 
 		String token = param.get("token");
 		int appUserCount = detailInfoDao.queryAppUserCount(token);
@@ -37,6 +38,11 @@ public class DetailInfoServiceImpl implements DetailInfoService {
 		if (appUserCount > 0) {
 			String sequence = param.get("sequence");
 			Map<String, Object> orderInfo = detailInfoDao.getOrderInfoBySequence(sequence);
+			
+			if (orderInfo == null) {
+				result.put("resultCode", 405);
+				return gson.toJson(result);
+			}
 
 			param.put("orderNumber", orderInfo.get("orderNumber").toString());
 			Map<String, Object> detailInfo = detailInfoDao.getDetailInfo(param);
@@ -208,11 +214,14 @@ public class DetailInfoServiceImpl implements DetailInfoService {
 					if (productVal != null && !"".equals(productVal.trim())) {
 						String[] productValArr = productVal.split("\\^");
 
-						tempMap = new HashMap<String, Object>();
-						tempMap.put("title", productValArr[0]);
-						tempMap.put("content", productValArr[1]);
-
-						detailInfoList.add(tempMap);
+						if (productValArr.length == 2) {
+							
+							tempMap = new HashMap<String, Object>();
+							tempMap.put("title", productValArr[0]);
+							tempMap.put("content", productValArr[1]);
+							
+							detailInfoList.add(tempMap);
+						}
 					}
 				}
 
@@ -223,6 +232,7 @@ public class DetailInfoServiceImpl implements DetailInfoService {
 				if (extendedDetailInfo != null) {
 					result.put("detectCount", extendedDetailInfo.get("detectCount"));
 					result.put("lastAddress", extendedDetailInfo.get("lastAddress"));
+					result.put("lastDetectTime", extendedDetailInfo.get("lastDetectTime"));
 				}
 
 				result.put("detail", detailInfoList);
@@ -235,7 +245,6 @@ public class DetailInfoServiceImpl implements DetailInfoService {
 			result.put("resultCode", 403);
 		}
 
-		Gson gson = new Gson();
 		return gson.toJson(result);
 	}
 

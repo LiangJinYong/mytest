@@ -15,26 +15,31 @@ public class EnterprisePhysicalDistributionDaoImpl implements EnterprisePhysical
 	private static final String NAMESPACE = "com.inter.enterprise.";
 	@Autowired
 	@Qualifier("orderSqlSession")
-	private SqlSessionTemplate sqlSessionTemplate;
+	private SqlSessionTemplate orderSqlSession;
+	
+	@Autowired
+	@Qualifier("authSqlSession")
+	private SqlSessionTemplate authSqlSession;
 
-	public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-		this.sqlSessionTemplate = sqlSessionTemplate;
-	}
 
 	public Map<String, Object> queryAppEnterpriseUserByToken(Map<String, String> param) {
 		
-		return sqlSessionTemplate.selectOne(NAMESPACE + "queryAppEnterpriseUserByToken", param);
-	}
-
-	public Map<String, String> querySequence(String sequence) {
-		return sqlSessionTemplate.selectOne(NAMESPACE + "querySequence", sequence);
+		return orderSqlSession.selectOne(NAMESPACE + "queryAppEnterpriseUserByToken", param);
 	}
 
 	public Map<String, String> queryAppPhysicalDistributionType(String sequence) {
-		return sqlSessionTemplate.selectOne(NAMESPACE + "queryAppPhysicalDistributionType", sequence);
+		return orderSqlSession.selectOne(NAMESPACE + "queryAppPhysicalDistributionType", sequence);
 	}
 
 	public void insertAppPhysicalDistribution(Map<String, String> param) {
-		sqlSessionTemplate.insert(NAMESPACE + "insertAppPhysicalDistribution", param);
+		orderSqlSession.insert(NAMESPACE + "insertAppPhysicalDistribution", param);
+	}
+
+	public Map<String, Integer> queryOrderBySequence(String sequence) {
+		return authSqlSession.selectOne(NAMESPACE + "queryOrderBySequence", sequence);
+	}
+
+	public Map<String, String> queryBizServiceInfo(int orderNumber) {
+		return orderSqlSession.selectOne(NAMESPACE + "queryBizServiceInfo", orderNumber);
 	}
 }

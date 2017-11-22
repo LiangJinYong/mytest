@@ -8,4 +8,6 @@ public interface CreateUserDao {
 
 	void insertNormalAppEnterpriseUser(Map<String, String> param);
 
+	int getCurrentIdCount(String currentId);
+
 }

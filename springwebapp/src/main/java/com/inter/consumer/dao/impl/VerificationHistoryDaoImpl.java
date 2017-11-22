@@ -54,14 +54,6 @@ public class VerificationHistoryDaoImpl implements VerificationHistoryDao {
 		logSqlSessionTemplate.insert(NAMESPACE + "insertSuccessLog", param);
 	}
 	
-	public Map<String, Object> getExtendedDetailInfoBySequence(String sequence) {
-		return orderSqlSessionTemplate.selectOne(NAMESPACE + "getExtendedDetailInfoBySequence", sequence);
-	}
-
-	public void updateExtendedDetailInfo(Map<String, String> param) {
-		orderSqlSessionTemplate.update(NAMESPACE + "updateExtendedDetailInfo", param);
-	}
-
 	public void insertExtendedDetailInfo(Map<String, String> param) {
 		orderSqlSessionTemplate.insert(NAMESPACE + "insertExtendedDetailInfo", param);
 	}

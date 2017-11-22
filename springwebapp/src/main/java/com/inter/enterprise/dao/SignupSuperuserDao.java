@@ -8,4 +8,8 @@ public interface SignupSuperuserDao {
 
 	void insertAppEnterpriseUser(Map<String, String> param);
 
+	int getCurrentMailCount(String currentMail);
+
+	int getCurrentIdCount(String currentId);
+
 }

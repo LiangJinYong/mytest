@@ -29,4 +29,12 @@ public class SignupSuperuserDaoImpl implements SignupSuperuserDao {
 		sqlSessionTemplate.insert(NAMESPACE + "insertAppEnterpriseUser", param);
 	}
 
+	public int getCurrentMailCount(String currentMail) {
+		return sqlSessionTemplate.selectOne(NAMESPACE + "getCurrentMailCount", currentMail);
+	}
+
+	public int getCurrentIdCount(String currentId) {
+		return sqlSessionTemplate.selectOne(NAMESPACE + "getCurrentIdCount", currentId);
+	}
+
 }

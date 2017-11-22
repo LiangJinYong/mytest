@@ -60,22 +60,22 @@ public class VerificationHistoryServiceImpl implements VerificationHistoryServic
 			if (orderNumberBySequence == null) {
 				param.put("isTimeout", "0");
 				verificationHistoryDao.insertFailLog(param);
+				
+				result.put("logType", "fail");
 			} else {
 				param.put("orderNum", orderNumberBySequence.toString());
 				verificationHistoryDao.insertSuccessLog(param);
 				
 				// when real success, insert or update detect count and last location
-				Map<String, Object> extendedDetailInfo = verificationHistoryDao.getExtendedDetailInfoBySequence(sequence);
+				verificationHistoryDao.insertExtendedDetailInfo(param);
 				
-				if (extendedDetailInfo != null) {
-					verificationHistoryDao.updateExtendedDetailInfo(param);
-				} else {
-					verificationHistoryDao.insertExtendedDetailInfo(param);
-				}
+				result.put("logType", "success");
 			}
 		} else {
 			param.put("isTimeout", "1");
 			verificationHistoryDao.insertFailLog(param);
+			
+			result.put("logType", "timeout");
 		}
 		
 		return gson.toJson(result);

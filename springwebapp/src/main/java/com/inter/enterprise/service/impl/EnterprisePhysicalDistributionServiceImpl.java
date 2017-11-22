@@ -38,13 +38,23 @@ public class EnterprisePhysicalDistributionServiceImpl implements EnterprisePhys
 			if ("AU01".equals(auth) || "AU02".equals(auth)) {
 				String sequence = param.get("sequence");
 
-				Map<String, String> sequenceMap = enterprisePhysicalDistributionDao.querySequence(sequence);
+				Map<String, Integer> orderMap = enterprisePhysicalDistributionDao.queryOrderBySequence(sequence);
 
-				String typeParam = param.get("type");
-				
-				if (sequenceMap != null) {
+				if (orderMap != null) {
+					
+					int orderNumber = orderMap.get("orderNumber");
+					
+					Map<String, String> bizServiceInfo = enterprisePhysicalDistributionDao.queryBizServiceInfo(orderNumber);
+					
+					if (bizServiceInfo != null) {
+						param.put("bizNm", bizServiceInfo.get("bizNm"));
+						param.put("svcNm", bizServiceInfo.get("svcNm"));
+					}
+					
 					Map<String, String> appPhysicalDistributionTypeMap = enterprisePhysicalDistributionDao.queryAppPhysicalDistributionType(sequence);
 
+					String typeParam = param.get("type");
+					
 					if (appPhysicalDistributionTypeMap != null) {
 						String typeDb = appPhysicalDistributionTypeMap.get("type");
 
@@ -63,6 +73,7 @@ public class EnterprisePhysicalDistributionServiceImpl implements EnterprisePhys
 							enterprisePhysicalDistributionDao.insertAppPhysicalDistribution(param);
 							result.put("resultCode", 200);
 						} catch (Exception e) {
+							e.printStackTrace();
 							result.put("resultCode", 500);
 						}
 					} else {

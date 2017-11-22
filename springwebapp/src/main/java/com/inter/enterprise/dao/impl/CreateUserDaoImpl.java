@@ -28,4 +28,8 @@ public class CreateUserDaoImpl implements CreateUserDao {
 	public void insertNormalAppEnterpriseUser(Map<String, String> param) {
 		sqlSessionTemplate.insert(NAMESPACE + "insertNormalAppEnterpriseUser", param);
 	}
+
+	public int getCurrentIdCount(String currentId) {
+		return sqlSessionTemplate.selectOne(NAMESPACE + "getCurrentIdCount", currentId);
+	}
 }
